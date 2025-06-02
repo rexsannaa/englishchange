@@ -1,9 +1,9 @@
-/**
- * 南臺科技大學英語 - 雙向費曼學習平台
- * 主要 JavaScript 功能模組
- */
+// scripts/app.js - 南臺科技大學英語學習平台主應用邏輯
 
-// 主應用程式類
+/**
+ * 主應用程式類別
+ * 處理用戶數據、學習統計、成就系統等核心功能
+ */
 class QiaomuEnglishApp {
     constructor() {
         this.currentUser = this.loadUserData();
@@ -13,11 +13,13 @@ class QiaomuEnglishApp {
         this.startPerformanceMonitoring();
     }
 
-    // 用戶數據管理
+    /**
+     * 載入用戶數據
+     */
     loadUserData() {
         const defaultUser = {
             name: localStorage.getItem('username') || '學習者',
-            email: localStorage.getItem('email') || 'user@demo.com',
+            email: localStorage.getItem('email') || 'user@stust.edu.tw',
             loginTime: localStorage.getItem('loginTime') || new Date().toISOString(),
             avatar: null,
             preferences: {
@@ -32,6 +34,9 @@ class QiaomuEnglishApp {
         return savedUser ? { ...defaultUser, ...JSON.parse(savedUser) } : defaultUser;
     }
 
+    /**
+     * 載入學習數據
+     */
     loadLearningData() {
         const defaultData = {
             totalWordsLearned: 0,
@@ -61,6 +66,9 @@ class QiaomuEnglishApp {
         return savedData ? { ...defaultData, ...JSON.parse(savedData) } : defaultData;
     }
 
+    /**
+     * 載入設定
+     */
     loadSettings() {
         const defaultSettings = {
             autoSave: true,
@@ -76,20 +84,30 @@ class QiaomuEnglishApp {
         return savedSettings ? { ...defaultSettings, ...JSON.parse(savedSettings) } : defaultSettings;
     }
 
-    // 數據保存
+    /**
+     * 保存用戶數據
+     */
     saveUserData() {
         localStorage.setItem('qiaomu-user-profile', JSON.stringify(this.currentUser));
     }
 
+    /**
+     * 保存學習數據
+     */
     saveLearningData() {
         localStorage.setItem('qiaomu-learning-data', JSON.stringify(this.learningData));
     }
 
+    /**
+     * 保存設定
+     */
     saveSettings() {
         localStorage.setItem('qiaomu-settings', JSON.stringify(this.settings));
     }
 
-    // 學習統計更新
+    /**
+     * 更新學習統計
+     */
     updateLearningStats(type, value = 1) {
         const today = new Date().toDateString();
         
@@ -140,7 +158,9 @@ class QiaomuEnglishApp {
         this.saveLearningData();
     }
 
-    // 成就系統
+    /**
+     * 成就系統檢查
+     */
     checkAchievements() {
         const achievements = [
             {
@@ -209,14 +229,19 @@ class QiaomuEnglishApp {
         });
     }
 
+    /**
+     * 解鎖成就
+     */
     unlockAchievement(achievement) {
         this.learningData.achievements.push(achievement.id);
         this.showAchievementNotification(achievement);
         this.saveLearningData();
     }
 
+    /**
+     * 顯示成就通知
+     */
     showAchievementNotification(achievement) {
-        // 創建成就通知
         const notification = document.createElement('div');
         notification.className = 'achievement-notification';
         notification.innerHTML = `
@@ -257,20 +282,23 @@ class QiaomuEnglishApp {
         setTimeout(() => {
             notification.style.transform = 'translateX(400px)';
             setTimeout(() => {
-                document.body.removeChild(notification);
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
             }, 500);
         }, 4000);
 
-        // 播放成就音效（如果啟用）
+        // 播放成就音效
         if (this.currentUser.preferences.soundEffects) {
             this.playAchievementSound();
         }
     }
 
-    // 音效管理
+    /**
+     * 播放成就音效
+     */
     playAchievementSound() {
         try {
-            // 使用 Web Audio API 創建簡單的成就音效
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
@@ -292,7 +320,9 @@ class QiaomuEnglishApp {
         }
     }
 
-    // 性能監控
+    /**
+     * 性能監控
+     */
     startPerformanceMonitoring() {
         this.performanceMetrics = {
             pageLoadTime: performance.now(),
@@ -319,11 +349,16 @@ class QiaomuEnglishApp {
         }, 60000); // 每分鐘保存一次
     }
 
+    /**
+     * 保存性能指標
+     */
     savePerformanceMetrics() {
         localStorage.setItem('qiaomu-performance', JSON.stringify(this.performanceMetrics));
     }
 
-    // 學習提醒系統
+    /**
+     * 設置學習提醒
+     */
     setupStudyReminders() {
         if (!this.settings.studyReminders || !('Notification' in window)) {
             return;
@@ -354,6 +389,9 @@ class QiaomuEnglishApp {
         }, timeUntilReminder);
     }
 
+    /**
+     * 發送學習提醒
+     */
     sendStudyReminder() {
         if (Notification.permission === 'granted') {
             const today = new Date().toDateString();
@@ -369,7 +407,9 @@ class QiaomuEnglishApp {
         }
     }
 
-    // 數據導出與導入
+    /**
+     * 數據導出
+     */
     exportLearningData() {
         const exportData = {
             user: this.currentUser,
@@ -390,6 +430,9 @@ class QiaomuEnglishApp {
         document.body.removeChild(link);
     }
 
+    /**
+     * 數據導入
+     */
     importLearningData(file) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -418,6 +461,9 @@ class QiaomuEnglishApp {
         reader.readAsText(file);
     }
 
+    /**
+     * 驗證導入數據
+     */
     validateImportData(data) {
         return data && 
                data.user && 
@@ -426,7 +472,9 @@ class QiaomuEnglishApp {
                data.version;
     }
 
-    // 離線支援
+    /**
+     * 離線支援設置
+     */
     setupOfflineSupport() {
         // 檢測網路狀態
         window.addEventListener('online', () => {
@@ -438,7 +486,7 @@ class QiaomuEnglishApp {
             this.showNetworkStatus('已離線，數據將保存在本地', 'warning');
         });
 
-        // 註冊 Service Worker（如果可用）
+        // 註冊 Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
                 .then(() => console.log('Service Worker 註冊成功'))
@@ -446,6 +494,9 @@ class QiaomuEnglishApp {
         }
     }
 
+    /**
+     * 顯示網路狀態
+     */
     showNetworkStatus(message, type) {
         const notification = document.createElement('div');
         notification.className = `network-status ${type}`;
@@ -466,17 +517,23 @@ class QiaomuEnglishApp {
         document.body.appendChild(notification);
 
         setTimeout(() => {
-            document.body.removeChild(notification);
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
         }, 3000);
     }
 
+    /**
+     * 同步離線數據
+     */
     syncOfflineData() {
         // 同步離線期間的數據到服務器
-        // 這裡可以實現與後端API的同步邏輯
         console.log('同步離線數據...');
     }
 
-    // 事件監聽器設置
+    /**
+     * 事件監聽器設置
+     */
     initializeEventListeners() {
         // 鍵盤快捷鍵
         document.addEventListener('keydown', (event) => {
@@ -512,6 +569,9 @@ class QiaomuEnglishApp {
         });
     }
 
+    /**
+     * 快速保存
+     */
     quickSave() {
         this.saveUserData();
         this.saveLearningData();
@@ -534,27 +594,38 @@ class QiaomuEnglishApp {
         document.body.appendChild(toast);
         
         setTimeout(() => {
-            document.body.removeChild(toast);
+            if (document.body.contains(toast)) {
+                document.body.removeChild(toast);
+            }
         }, 2000);
     }
 
+    /**
+     * 暫停計時器
+     */
     pauseTimers() {
-        // 暫停所有計時器
         this.timersPaused = true;
     }
 
+    /**
+     * 恢復計時器
+     */
     resumeTimers() {
-        // 恢復所有計時器
         this.timersPaused = false;
     }
 
-    // 主題管理
+    /**
+     * 設置主題
+     */
     setTheme(theme) {
         this.currentUser.preferences.theme = theme;
         this.saveUserData();
         this.applyTheme();
     }
 
+    /**
+     * 應用主題
+     */
     applyTheme() {
         const theme = this.currentUser.preferences.theme;
         
@@ -569,7 +640,9 @@ class QiaomuEnglishApp {
         }
     }
 
-    // 輔助功能
+    /**
+     * 輔助功能設置
+     */
     setupAccessibility() {
         // 鍵盤導航支援
         document.addEventListener('keydown', (event) => {
@@ -593,7 +666,9 @@ class QiaomuEnglishApp {
         }
     }
 
-    // 錯誤處理
+    /**
+     * 錯誤處理
+     */
     handleError(error, context) {
         console.error(`錯誤發生在 ${context}:`, error);
         
@@ -604,6 +679,9 @@ class QiaomuEnglishApp {
         this.showErrorNotification(errorMessage);
     }
 
+    /**
+     * 取得錯誤訊息
+     */
     getErrorMessage(error) {
         if (error.name === 'QuotaExceededError') {
             return '儲存空間不足，請清理瀏覽器數據';
@@ -614,6 +692,9 @@ class QiaomuEnglishApp {
         return '發生未知錯誤，請重新整理頁面';
     }
 
+    /**
+     * 顯示錯誤通知
+     */
     showErrorNotification(message) {
         const notification = document.createElement('div');
         notification.className = 'error-notification';
@@ -648,7 +729,9 @@ class QiaomuEnglishApp {
         }, 5000);
     }
 
-    // 初始化應用程式
+    /**
+     * 初始化應用程式
+     */
     initialize() {
         try {
             this.applyTheme();
@@ -662,7 +745,9 @@ class QiaomuEnglishApp {
     }
 }
 
-// 全域工具函數
+/**
+ * 全域工具函數
+ */
 window.QiaomuUtils = {
     // 格式化時間
     formatTime(seconds) {
@@ -755,7 +840,9 @@ window.QiaomuUtils = {
     }
 };
 
-// 當頁面載入完成時初始化應用程式
+/**
+ * 頁面載入完成時初始化應用程式
+ */
 document.addEventListener('DOMContentLoaded', () => {
     // 檢查登入狀態
     if (!localStorage.getItem('username')) {

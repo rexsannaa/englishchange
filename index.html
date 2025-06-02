@@ -1,3 +1,4 @@
+<!-- index.html - 南臺科技大學英語學習平台主頁面 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -11,263 +12,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <!-- Local Styles -->
-    <style>
-        /* 基礎樣式設定 */
-        body {
-            font-family: 'Noto Sans TC', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            overflow-x: hidden;
-        }
-
-        .font-serif { 
-            font-family: 'Noto Serif TC', serif; 
-        }
-
-        .smooth-transition { 
-            transition: all 0.3s ease-in-out; 
-        }
-
-        /* 動態背景效果 */
-        .dynamic-bg {
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* 玻璃擬態效果 */
-        .glass-morphism {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        }
-
-        /* 模組切換動畫 */
-        .module-fade-enter-active, 
-        .module-fade-leave-active { 
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); 
-        }
-
-        .module-fade-enter-from { 
-            opacity: 0;
-            transform: translateY(30px) scale(0.95);
-        }
-
-        .module-fade-leave-to { 
-            opacity: 0;
-            transform: translateY(-30px) scale(0.95);
-        }
-
-        /* 翻卡 3D 翻轉效果 */
-        .flashcard-container {
-            perspective: 1000px;
-            height: 400px;
-        }
-
-        .flashcard {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
-            cursor: pointer;
-        }
-
-        .flashcard.is-flipped { 
-            transform: rotateY(180deg); 
-        }
-
-        .flashcard-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-
-        .flashcard-front { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .flashcard-back { 
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            transform: rotateY(180deg); 
-        }
-
-        /* 費曼學習卡片 */
-        .feynman-card {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .feynman-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        /* 強迫學習進度條 */
-        .force-progress {
-            height: 8px;
-            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .force-progress::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        /* 測驗回饋樣式 */
-        .option-button {
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            transform: translateY(0);
-        }
-
-        .option-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .option-button.correct { 
-            background: linear-gradient(135deg, #48bb78, #38a169);
-            color: white;
-            transform: scale(1.02);
-        }
-
-        .option-button.incorrect { 
-            background: linear-gradient(135deg, #f56565, #e53e3e);
-            color: white;
-            transform: scale(0.98);
-        }
-
-        /* 學習統計圖表 */
-        .stat-circle {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: conic-gradient(from 0deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #ff6b6b);
-            animation: rotate 10s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .stat-inner {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* 響應式設計增強 */
-        @media (max-width: 768px) {
-            .flashcard-container {
-                height: 350px;
-            }
-            
-            .feynman-card {
-                padding: 1rem;
-            }
-            
-            .stat-circle {
-                width: 100px;
-                height: 100px;
-            }
-            
-            .stat-inner {
-                width: 75px;
-                height: 75px;
-            }
-        }
-
-        /* 懸浮動效 */
-        .floating {
-            animation: floating 3s ease-in-out infinite;
-        }
-
-        @keyframes floating {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        /* 脈衝效果 */
-        .pulse-ring {
-            animation: pulse-ring 2s infinite;
-        }
-
-        @keyframes pulse-ring {
-            0% {
-                transform: scale(0.8);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(2);
-                opacity: 0;
-            }
-        }
-
-        /* 登入狀態指示器 */
-        .user-indicator {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .user-indicator::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .user-indicator:hover::before {
-            left: 100%;
-        }
-    </style>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
     
+    <!-- Alpine.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.0/cdn.min.js" defer></script>
 </head>
 <body class="dynamic-bg min-h-screen" x-data="qiaomuApp()">
@@ -278,8 +26,9 @@
             <div class="flex justify-between items-center">
                 <!-- Logo -->
                 <div @click="resetToHome()" 
-                     class="text-2xl font-black text-white font-serif cursor-pointer hover:text-yellow-200 transform hover:scale-105 transition-all duration-300 floating">
-                    <i class="fas fa-graduation-cap mr-2"></i>南臺科技大學英語學習平台
+                     class="logo-container cursor-pointer floating">
+                    <i class="fas fa-graduation-cap mr-2"></i>
+                    <span class="logo-text">南臺科技大學英語學習平台</span>
                 </div>
                 
                 <!-- 用戶資訊 -->
@@ -289,40 +38,45 @@
                         <p class="text-xs opacity-70">連續學習 <span x-text="learningStreak"></span> 天</p>
                     </div>
                     <div class="relative">
-                        <div class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                        <div class="user-avatar">
                             <i class="fas fa-user text-white"></i>
                         </div>
-                        <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full pulse-ring"></div>
+                        <div class="status-indicator pulse-ring"></div>
                     </div>
                 </div>
             </div>
             
             <!-- 主導航 -->
-            <div class="mt-4 flex justify-center space-x-1 sm:space-x-4 overflow-x-auto">
+            <div class="main-navigation">
                 <button @click="currentModule = 'dashboard'" 
-                        :class="{'bg-white bg-opacity-30 text-white': currentModule === 'dashboard', 'text-white text-opacity-70 hover:text-white hover:bg-white hover:bg-opacity-20': currentModule !== 'dashboard'}" 
-                        class="px-3 py-2 rounded-lg transition-all duration-300 text-sm sm:text-base whitespace-nowrap">
-                    <i class="fas fa-tachometer-alt mr-1 sm:mr-2"></i>儀表板
+                        :class="{'active': currentModule === 'dashboard'}" 
+                        class="nav-button">
+                    <i class="fas fa-tachometer-alt mr-1 sm:mr-2"></i>
+                    <span>儀表板</span>
                 </button>
                 <button @click="currentModule = 'words'" 
-                        :class="{'bg-white bg-opacity-30 text-white': currentModule === 'words', 'text-white text-opacity-70 hover:text-white hover:bg-white hover:bg-opacity-20': currentModule !== 'words'}" 
-                        class="px-3 py-2 rounded-lg transition-all duration-300 text-sm sm:text-base whitespace-nowrap">
-                    <i class="fas fa-book mr-1 sm:mr-2"></i>單字學習
+                        :class="{'active': currentModule === 'words'}" 
+                        class="nav-button">
+                    <i class="fas fa-book mr-1 sm:mr-2"></i>
+                    <span>單字學習</span>
                 </button>
                 <button @click="currentModule = 'feynman'" 
-                        :class="{'bg-white bg-opacity-30 text-white': currentModule === 'feynman', 'text-white text-opacity-70 hover:text-white hover:bg-white hover:bg-opacity-20': currentModule !== 'feynman'}" 
-                        class="px-3 py-2 rounded-lg transition-all duration-300 text-sm sm:text-base whitespace-nowrap">
-                    <i class="fas fa-brain mr-1 sm:mr-2"></i>費曼學習
+                        :class="{'active': currentModule === 'feynman'}" 
+                        class="nav-button">
+                    <i class="fas fa-brain mr-1 sm:mr-2"></i>
+                    <span>費曼學習</span>
                 </button>
                 <button @click="currentModule = 'force'" 
-                        :class="{'bg-white bg-opacity-30 text-white': currentModule === 'force', 'text-white text-opacity-70 hover:text-white hover:bg-white hover:bg-opacity-20': currentModule !== 'force'}" 
-                        class="px-3 py-2 rounded-lg transition-all duration-300 text-sm sm:text-base whitespace-nowrap">
-                    <i class="fas fa-dumbbell mr-1 sm:mr-2"></i>強迫學習
+                        :class="{'active': currentModule === 'force'}" 
+                        class="nav-button">
+                    <i class="fas fa-dumbbell mr-1 sm:mr-2"></i>
+                    <span>強迫學習</span>
                 </button>
                 <button @click="currentModule = 'quiz'" 
-                        :class="{'bg-white bg-opacity-30 text-white': currentModule === 'quiz', 'text-white text-opacity-70 hover:text-white hover:bg-white hover:bg-opacity-20': currentModule !== 'quiz'}" 
-                        class="px-3 py-2 rounded-lg transition-all duration-300 text-sm sm:text-base whitespace-nowrap">
-                    <i class="fas fa-tasks mr-1 sm:mr-2"></i>測驗
+                        :class="{'active': currentModule === 'quiz'}" 
+                        class="nav-button">
+                    <i class="fas fa-tasks mr-1 sm:mr-2"></i>
+                    <span>測驗</span>
                 </button>
             </div>
         </nav>
@@ -339,70 +93,70 @@
              x-transition:leave-start="" 
              x-transition:leave-end="module-fade-leave-to">
             
-            <h2 class="text-3xl font-bold text-white text-center mb-8 floating">
+            <h2 class="module-title floating">
                 <i class="fas fa-chart-line mr-3"></i>學習儀表板
             </h2>
             
             <!-- 學習統計卡片 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="glass-morphism rounded-xl p-6 text-center text-white">
+            <div class="stats-grid">
+                <div class="stat-card">
                     <div class="stat-circle mx-auto mb-4">
                         <div class="stat-inner">
-                            <div class="text-2xl font-bold text-gray-800" x-text="words.length"></div>
-                            <div class="text-xs text-gray-600">單字</div>
+                            <div class="stat-number" x-text="words.length"></div>
+                            <div class="stat-label">單字</div>
                         </div>
                     </div>
-                    <h3 class="text-lg font-semibold">已學單字</h3>
+                    <h3 class="stat-title">已學單字</h3>
                 </div>
                 
-                <div class="glass-morphism rounded-xl p-6 text-center text-white">
-                    <div class="text-4xl mb-2">
+                <div class="stat-card">
+                    <div class="stat-icon">
                         <i class="fas fa-brain text-yellow-300"></i>
                     </div>
-                    <div class="text-2xl font-bold" x-text="feynmanProgress.completed"></div>
-                    <h3 class="text-lg font-semibold">費曼解釋</h3>
+                    <div class="stat-number" x-text="feynmanProgress.completed"></div>
+                    <h3 class="stat-title">費曼解釋</h3>
                 </div>
                 
-                <div class="glass-morphism rounded-xl p-6 text-center text-white">
-                    <div class="text-4xl mb-2">
+                <div class="stat-card">
+                    <div class="stat-icon">
                         <i class="fas fa-dumbbell text-red-300"></i>
                     </div>
-                    <div class="text-2xl font-bold" x-text="forceProgress.level"></div>
-                    <h3 class="text-lg font-semibold">強迫等級</h3>
+                    <div class="stat-number" x-text="forceProgress.level"></div>
+                    <h3 class="stat-title">強迫等級</h3>
                 </div>
                 
-                <div class="glass-morphism rounded-xl p-6 text-center text-white">
-                    <div class="text-4xl mb-2">
+                <div class="stat-card">
+                    <div class="stat-icon">
                         <i class="fas fa-trophy text-green-300"></i>
                     </div>
-                    <div class="text-2xl font-bold" x-text="getAccuracyRate() + '%'"></div>
-                    <h3 class="text-lg font-semibold">準確率</h3>
+                    <div class="stat-number" x-text="getAccuracyRate() + '%'"></div>
+                    <h3 class="stat-title">準確率</h3>
                 </div>
             </div>
             
             <!-- 學習建議 -->
-            <div class="glass-morphism rounded-xl p-6 text-white mb-8">
-                <h3 class="text-xl font-bold mb-4">
+            <div class="learning-suggestions">
+                <h3 class="suggestions-title">
                     <i class="fas fa-lightbulb text-yellow-300 mr-2"></i>今日學習建議
                 </h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                        <h4 class="font-semibold mb-2">
+                <div class="suggestions-grid">
+                    <div class="suggestion-card">
+                        <h4 class="suggestion-title">
                             <i class="fas fa-book-open mr-2"></i>繼續單字學習
                         </h4>
-                        <p class="text-sm opacity-90">還有 <span x-text="getRemainingWords()"></span> 個單字等待學習</p>
+                        <p class="suggestion-desc">還有 <span x-text="getRemainingWords()"></span> 個單字等待學習</p>
                     </div>
-                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                        <h4 class="font-semibold mb-2">
+                    <div class="suggestion-card">
+                        <h4 class="suggestion-title">
                             <i class="fas fa-chalkboard-teacher mr-2"></i>練習費曼講解
                         </h4>
-                        <p class="text-sm opacity-90">用自己的話解釋學過的單字</p>
+                        <p class="suggestion-desc">用自己的話解釋學過的單字</p>
                     </div>
-                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                        <h4 class="font-semibold mb-2">
+                    <div class="suggestion-card">
+                        <h4 class="suggestion-title">
                             <i class="fas fa-clock mr-2"></i>強迫學習挑戰
                         </h4>
-                        <p class="text-sm opacity-90">設定時間限制，提升學習效率</p>
+                        <p class="suggestion-desc">設定時間限制，提升學習效率</p>
                     </div>
                 </div>
             </div>
@@ -417,7 +171,7 @@
              x-transition:leave-start="" 
              x-transition:leave-end="module-fade-leave-to">
             
-            <h2 class="text-3xl font-bold text-white text-center mb-8 floating">
+            <h2 class="module-title floating">
                 <i class="fas fa-book mr-3"></i>單字學習
             </h2>
             
@@ -426,36 +180,31 @@
                     <div class="flashcard" :class="{ 'is-flipped': wordCardFlipped }" @click="wordCardFlipped = !wordCardFlipped">
                         <!-- 正面 -->
                         <div class="flashcard-face flashcard-front">
-                            <div class="text-5xl font-bold mb-4" x-text="currentWordData.word"></div>
-                            <div class="text-xl opacity-80" x-text="currentWordData.phonetic"></div>
-                            <div class="absolute bottom-4 right-4 text-sm opacity-60">
-                                點擊翻卡
-                            </div>
+                            <div class="word-display" x-text="currentWordData.word"></div>
+                            <div class="phonetic-display" x-text="currentWordData.phonetic"></div>
+                            <div class="flip-hint">點擊翻卡</div>
                         </div>
                         
                         <!-- 背面 -->
                         <div class="flashcard-face flashcard-back">
-                            <div class="w-full h-full flex flex-col justify-between p-4">
-                                <div class="space-y-4">
-                                    <div class="text-center">
-                                        <h3 class="text-xl font-bold mb-2">釋義</h3>
-                                        <p class="text-lg" x-text="currentWordData.definition"></p>
-                                    </div>
-                                    
-                                    <div class="text-center" x-show="currentWordData.etymology">
-                                        <h3 class="text-lg font-bold mb-2">詞根解析</h3>
-                                        <p class="text-sm opacity-90" x-text="currentWordData.etymology"></p>
-                                    </div>
-                                    
-                                    <div class="text-center">
-                                        <h3 class="text-lg font-bold mb-2">例句</h3>
-                                        <p class="text-sm italic opacity-90" x-text="currentWordData.sentence"></p>
-                                    </div>
+                            <div class="word-details">
+                                <div class="word-section">
+                                    <h3 class="section-title">釋義</h3>
+                                    <p class="section-content" x-text="currentWordData.definition"></p>
                                 </div>
                                 
-                                <div class="text-center mt-4">
-                                    <button @click.stop="startFeynmanExplanation()" 
-                                            class="bg-white bg-opacity-30 text-white px-4 py-2 rounded-lg hover:bg-opacity-50 transition-all duration-300">
+                                <div class="word-section" x-show="currentWordData.etymology">
+                                    <h3 class="section-title">詞根解析</h3>
+                                    <p class="section-content small" x-text="currentWordData.etymology"></p>
+                                </div>
+                                
+                                <div class="word-section">
+                                    <h3 class="section-title">例句</h3>
+                                    <p class="section-content italic" x-text="currentWordData.sentence"></p>
+                                </div>
+                                
+                                <div class="word-actions">
+                                    <button @click.stop="startFeynmanExplanation()" class="action-btn">
                                         <i class="fas fa-brain mr-2"></i>費曼解釋
                                     </button>
                                 </div>
@@ -464,30 +213,32 @@
                     </div>
                 </div>
 
-                <!-- 導航按鈕 -->
-                <div class="flex justify-between items-center mb-8">
+                <!-- 導航控制 -->
+                <div class="word-navigation">
                     <button @click="prevWord()" 
                             :disabled="currentWordIndex === 0" 
-                            class="flex items-center px-6 py-3 bg-white bg-opacity-20 text-white rounded-xl hover:bg-opacity-30 disabled:opacity-50 disabled:cursor-not-allowed smooth-transition">
+                            class="nav-btn prev-btn">
                         <i class="fas fa-chevron-left mr-2"></i> 上一個
                     </button>
 
-                    <div class="text-white text-center">
-                        <div class="text-lg font-semibold" x-text="`${currentWordIndex + 1} / ${words.length}`"></div>
-                        <div class="text-sm opacity-70">單字進度</div>
+                    <div class="progress-info">
+                        <div class="progress-text" x-text="`${currentWordIndex + 1} / ${words.length}`"></div>
+                        <div class="progress-label">單字進度</div>
                     </div>
 
                     <button @click="nextWord()" 
                             :disabled="currentWordIndex >= words.length - 1"
-                            class="flex items-center px-6 py-3 bg-white bg-opacity-20 text-white rounded-xl hover:bg-opacity-30 disabled:opacity-50 disabled:cursor-not-allowed smooth-transition">
+                            class="nav-btn next-btn">
                         下一個 <i class="fas fa-chevron-right ml-2"></i>
                     </button>
                 </div>
                 
                 <!-- 進度條 -->
-                <div class="force-progress mb-4" style="width: 100%;">
-                    <div class="h-full bg-white bg-opacity-30 transition-all duration-500" 
-                         :style="`width: ${((currentWordIndex + 1) / words.length) * 100}%`"></div>
+                <div class="progress-container">
+                    <div class="force-progress">
+                        <div class="progress-bar" 
+                             :style="`width: ${((currentWordIndex + 1) / words.length) * 100}%`"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -501,51 +252,51 @@
              x-transition:leave-start="" 
              x-transition:leave-end="module-fade-leave-to">
             
-            <h2 class="text-3xl font-bold text-white text-center mb-8 floating">
+            <h2 class="module-title floating">
                 <i class="fas fa-brain mr-3"></i>費曼學習法
             </h2>
             
             <div class="max-w-4xl mx-auto">
                 <!-- 費曼學習說明 -->
-                <div class="glass-morphism rounded-xl p-6 text-white mb-8">
-                    <h3 class="text-xl font-bold mb-4">
+                <div class="feynman-intro">
+                    <h3 class="intro-title">
                         <i class="fas fa-info-circle mr-2"></i>什麼是費曼學習法？
                     </h3>
-                    <p class="mb-4">費曼學習法是一種通過「教授他人」來加深理解的學習方法。當你能用簡單的話解釋複雜的概念時，就表示你真正理解了。</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                            <h4 class="font-semibold mb-2">📚 選擇概念</h4>
-                            <p class="text-sm">選擇一個你想要學習的單字或概念</p>
+                    <p class="intro-desc">費曼學習法是一種通過「教授他人」來加深理解的學習方法。當你能用簡單的話解釋複雜的概念時，就表示你真正理解了。</p>
+                    <div class="intro-steps">
+                        <div class="step-item">
+                            <h4 class="step-title">📚 選擇概念</h4>
+                            <p class="step-desc">選擇一個你想要學習的單字或概念</p>
                         </div>
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                            <h4 class="font-semibold mb-2">👨‍🏫 簡單解釋</h4>
-                            <p class="text-sm">用你自己的話，像教小孩一樣解釋</p>
+                        <div class="step-item">
+                            <h4 class="step-title">👨‍🏫 簡單解釋</h4>
+                            <p class="step-desc">用你自己的話，像教小孩一樣解釋</p>
                         </div>
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                            <h4 class="font-semibold mb-2">🔍 找出漏洞</h4>
-                            <p class="text-sm">發現解釋中的不足之處</p>
+                        <div class="step-item">
+                            <h4 class="step-title">🔍 找出漏洞</h4>
+                            <p class="step-desc">發現解釋中的不足之處</p>
                         </div>
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                            <h4 class="font-semibold mb-2">📖 重新學習</h4>
-                            <p class="text-sm">回到原材料，填補知識漏洞</p>
+                        <div class="step-item">
+                            <h4 class="step-title">📖 重新學習</h4>
+                            <p class="step-desc">回到原材料，填補知識漏洞</p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- 費曼練習區 -->
-                <div class="feynman-card mb-8">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+                <div class="feynman-practice">
+                    <h3 class="practice-title">
                         <i class="fas fa-chalkboard-teacher mr-2"></i>開始你的費曼解釋
                     </h3>
                     
                     <!-- 選擇單字 -->
-                    <div class="mb-6">
-                        <label class="block text-gray-700 font-semibold mb-3">選擇要解釋的單字：</label>
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    <div class="word-selection">
+                        <label class="selection-label">選擇要解釋的單字：</label>
+                        <div class="word-grid">
                             <template x-for="(word, index) in words" :key="index">
                                 <button @click="selectFeynmanWord(index)"
-                                        :class="{'bg-blue-500 text-white': feynmanWordIndex === index, 'bg-gray-200 text-gray-700 hover:bg-gray-300': feynmanWordIndex !== index}"
-                                        class="px-4 py-2 rounded-lg transition-all duration-300 font-medium"
+                                        :class="{'selected': feynmanWordIndex === index}"
+                                        class="word-option"
                                         x-text="word.word">
                                 </button>
                             </template>
@@ -553,62 +304,62 @@
                     </div>
                     
                     <!-- 解釋輸入區 -->
-                    <div class="mb-6" x-show="feynmanWordIndex !== -1">
-                        <label class="block text-gray-700 font-semibold mb-3">
-                            用簡單的話解釋 "<span x-text="currentFeynmanWord.word" class="text-blue-600"></span>"：
+                    <div class="explanation-section" x-show="feynmanWordIndex !== -1">
+                        <label class="explanation-label">
+                            用簡單的話解釋 "<span x-text="currentFeynmanWord.word" class="word-highlight"></span>"：
                         </label>
                         <textarea x-model="feynmanExplanation"
                                   placeholder="想像你在教一個10歲的孩子，用最簡單的語言解釋這個單字..."
-                                  class="w-full h-32 p-4 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
+                                  class="explanation-textarea"
                                   @input="checkFeynmanExplanation()"></textarea>
-                        <div class="mt-2 text-sm text-gray-600">
+                        <div class="char-counter">
                             建議字數：<span x-text="feynmanExplanation.length"></span> / 100+
                         </div>
                     </div>
                     
                     <!-- AI 反饋 -->
-                    <div x-show="feynmanFeedback" class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-                        <h4 class="font-semibold text-blue-800 mb-2">
+                    <div x-show="feynmanFeedback" class="ai-feedback">
+                        <h4 class="feedback-title">
                             <i class="fas fa-robot mr-2"></i>AI 反饋
                         </h4>
-                        <p class="text-blue-700" x-text="feynmanFeedback"></p>
+                        <p class="feedback-content" x-text="feynmanFeedback"></p>
                     </div>
                     
                     <!-- 提交按鈕 -->
-                    <div class="text-center" x-show="feynmanWordIndex !== -1">
+                    <div class="submit-section" x-show="feynmanWordIndex !== -1">
                         <button @click="submitFeynmanExplanation()"
                                 :disabled="feynmanExplanation.length < 50"
-                                class="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105">
+                                class="submit-btn">
                             <i class="fas fa-paper-plane mr-2"></i>提交解釋
                         </button>
                     </div>
                 </div>
                 
                 <!-- 費曼學習歷史 -->
-                <div class="glass-morphism rounded-xl p-6 text-white">
-                    <h3 class="text-xl font-bold mb-4">
+                <div class="feynman-history">
+                    <h3 class="history-title">
                         <i class="fas fa-history mr-2"></i>我的費曼解釋記錄
                     </h3>
-                    <div class="space-y-4" x-show="feynmanHistory.length > 0">
+                    <div class="history-list" x-show="feynmanHistory.length > 0">
                         <template x-for="(record, index) in feynmanHistory" :key="index">
-                            <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h4 class="font-semibold" x-text="record.word"></h4>
-                                    <span class="text-sm opacity-70" x-text="record.date"></span>
+                            <div class="history-item">
+                                <div class="history-header">
+                                    <h4 class="history-word" x-text="record.word"></h4>
+                                    <span class="history-date" x-text="record.date"></span>
                                 </div>
-                                <p class="text-sm opacity-90 mb-2" x-text="record.explanation"></p>
-                                <div class="flex items-center">
-                                    <div class="flex text-yellow-400">
+                                <p class="history-explanation" x-text="record.explanation"></p>
+                                <div class="history-rating">
+                                    <div class="rating-stars">
                                         <template x-for="i in 5" :key="i">
                                             <i :class="i <= record.rating ? 'fas fa-star' : 'far fa-star'"></i>
                                         </template>
                                     </div>
-                                    <span class="ml-2 text-sm" x-text="record.feedback"></span>
+                                    <span class="rating-feedback" x-text="record.feedback"></span>
                                 </div>
                             </div>
                         </template>
                     </div>
-                    <div x-show="feynmanHistory.length === 0" class="text-center py-8 opacity-70">
+                    <div x-show="feynmanHistory.length === 0" class="empty-state">
                         <i class="fas fa-clipboard-list text-4xl mb-4"></i>
                         <p>還沒有費曼解釋記錄，開始你的第一次解釋吧！</p>
                     </div>
@@ -625,94 +376,90 @@
              x-transition:leave-start="" 
              x-transition:leave-end="module-fade-leave-to">
             
-            <h2 class="text-3xl font-bold text-white text-center mb-8 floating">
+            <h2 class="module-title floating">
                 <i class="fas fa-dumbbell mr-3"></i>強迫學習法
             </h2>
             
             <div class="max-w-4xl mx-auto">
                 <!-- 強迫學習說明 -->
-                <div class="glass-morphism rounded-xl p-6 text-white mb-8">
-                    <h3 class="text-xl font-bold mb-4">
+                <div class="force-intro">
+                    <h3 class="intro-title">
                         <i class="fas fa-stopwatch mr-2"></i>什麼是強迫學習法？
                     </h3>
-                    <p class="mb-4">強迫學習法通過設定時間限制和特定條件，迫使大腦在壓力下高效學習，提升記憶效果和專注力。</p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                            <h4 class="font-semibold mb-2">⏰ 時間壓力</h4>
-                            <p class="text-sm">限制學習時間，提高效率</p>
+                    <p class="intro-desc">強迫學習法通過設定時間限制和特定條件，迫使大腦在壓力下高效學習，提升記憶效果和專注力。</p>
+                    <div class="intro-features">
+                        <div class="feature-item">
+                            <h4 class="feature-title">⏰ 時間壓力</h4>
+                            <p class="feature-desc">限制學習時間，提高效率</p>
                         </div>
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                            <h4 class="font-semibold mb-2">🎯 目標明確</h4>
-                            <p class="text-sm">設定具體的學習目標</p>
+                        <div class="feature-item">
+                            <h4 class="feature-title">🎯 目標明確</h4>
+                            <p class="feature-desc">設定具體的學習目標</p>
                         </div>
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                            <h4 class="font-semibold mb-2">🏆 即時反饋</h4>
-                            <p class="text-sm">立即獲得學習成果</p>
+                        <div class="feature-item">
+                            <h4 class="feature-title">🏆 即時反饋</h4>
+                            <p class="feature-desc">立即獲得學習成果</p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- 強迫學習挑戰選擇 -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="challenge-selection">
                     <!-- 快速記憶挑戰 -->
-                    <div class="feynman-card cursor-pointer" @click="startForceChallenge('memory')">
-                        <div class="text-center">
-                            <div class="text-4xl mb-4">🧠</div>
-                            <h3 class="text-xl font-bold text-gray-800 mb-2">快速記憶挑戰</h3>
-                            <p class="text-gray-600 mb-4">在限定時間內記住盡可能多的單字</p>
-                            <div class="bg-blue-100 rounded-lg p-3">
-                                <div class="text-sm text-blue-800">目標：60秒內記住10個單字</div>
-                            </div>
+                    <div class="challenge-card" @click="startForceChallenge('memory')">
+                        <div class="challenge-icon">🧠</div>
+                        <h3 class="challenge-title">快速記憶挑戰</h3>
+                        <p class="challenge-desc">在限定時間內記住盡可能多的單字</p>
+                        <div class="challenge-goal">
+                            <div class="goal-text">目標：60秒內記住10個單字</div>
                         </div>
                     </div>
                     
                     <!-- 閃電測驗 -->
-                    <div class="feynman-card cursor-pointer" @click="startForceChallenge('quiz')">
-                        <div class="text-center">
-                            <div class="text-4xl mb-4">⚡</div>
-                            <h3 class="text-xl font-bold text-gray-800 mb-2">閃電測驗</h3>
-                            <p class="text-gray-600 mb-4">快速回答單字問題，考驗反應速度</p>
-                            <div class="bg-red-100 rounded-lg p-3">
-                                <div class="text-sm text-red-800">目標：30秒內答對5題</div>
-                            </div>
+                    <div class="challenge-card" @click="startForceChallenge('quiz')">
+                        <div class="challenge-icon">⚡</div>
+                        <h3 class="challenge-title">閃電測驗</h3>
+                        <p class="challenge-desc">快速回答單字問題，考驗反應速度</p>
+                        <div class="challenge-goal lightning">
+                            <div class="goal-text">目標：30秒內答對5題</div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- 強迫學習進行中 -->
-                <div x-show="forceChallenge.active" class="glass-morphism rounded-xl p-6 text-white">
+                <div x-show="forceChallenge.active" class="force-active">
                     <!-- 倒計時顯示 -->
-                    <div class="text-center mb-6">
-                        <div class="text-6xl font-bold mb-2" 
-                             :class="{'text-red-400 animate-pulse': forceChallenge.timeLeft <= 10, 'text-white': forceChallenge.timeLeft > 10}"
+                    <div class="timer-display">
+                        <div class="timer-number" 
+                             :class="{'critical': forceChallenge.timeLeft <= 10}"
                              x-text="forceChallenge.timeLeft"></div>
-                        <div class="text-lg opacity-80">秒</div>
-                        <div class="force-progress mt-4">
-                            <div class="h-full bg-gradient-to-r from-green-400 to-red-400 transition-all duration-1000" 
+                        <div class="timer-label">秒</div>
+                        <div class="timer-progress">
+                            <div class="progress-bar" 
                                  :style="`width: ${(1 - forceChallenge.timeLeft / forceChallenge.totalTime) * 100}%`"></div>
                         </div>
                     </div>
                     
                     <!-- 記憶挑戰內容 -->
-                    <div x-show="forceChallenge.type === 'memory'">
-                        <h3 class="text-xl font-bold text-center mb-6">記住這些單字：</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                    <div x-show="forceChallenge.type === 'memory'" class="memory-challenge">
+                        <h3 class="challenge-instruction">記住這些單字：</h3>
+                        <div class="memory-words">
                             <template x-for="(word, index) in forceChallenge.words" :key="index">
-                                <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
-                                    <div class="text-lg font-bold" x-text="word.word"></div>
-                                    <div class="text-sm opacity-80" x-text="word.definition"></div>
+                                <div class="memory-word">
+                                    <div class="word-text" x-text="word.word"></div>
+                                    <div class="word-def" x-text="word.definition"></div>
                                 </div>
                             </template>
                         </div>
                     </div>
                     
                     <!-- 測驗挑戰內容 -->
-                    <div x-show="forceChallenge.type === 'quiz' && forceChallenge.currentQuestion">
-                        <h3 class="text-xl font-bold text-center mb-6" x-text="forceChallenge.currentQuestion.question"></h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div x-show="forceChallenge.type === 'quiz' && forceChallenge.currentQuestion" class="quiz-challenge">
+                        <h3 class="question-text" x-text="forceChallenge.currentQuestion.question"></h3>
+                        <div class="quiz-options">
                             <template x-for="(option, index) in forceChallenge.currentQuestion.options" :key="index">
                                 <button @click="answerForceQuestion(index)"
-                                        class="bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg p-4 text-left transition-all duration-300"
+                                        class="quiz-option"
                                         x-text="option">
                                 </button>
                             </template>
@@ -720,52 +467,50 @@
                     </div>
                     
                     <!-- 進度顯示 -->
-                    <div class="text-center mt-6">
-                        <div class="text-lg font-semibold">
+                    <div class="challenge-progress">
+                        <div class="progress-text">
                             進度：<span x-text="forceChallenge.score"></span> / <span x-text="forceChallenge.target"></span>
                         </div>
                     </div>
                 </div>
                 
                 <!-- 強迫學習結果 -->
-                <div x-show="forceChallenge.completed" class="glass-morphism rounded-xl p-6 text-white text-center">
-                    <div class="text-4xl mb-4">
-                        <i :class="forceChallenge.success ? 'fas fa-trophy text-yellow-400' : 'fas fa-clock text-red-400'"></i>
+                <div x-show="forceChallenge.completed" class="force-results">
+                    <div class="result-icon">
+                        <i :class="forceChallenge.success ? 'fas fa-trophy success' : 'fas fa-clock failed'"></i>
                     </div>
-                    <h3 class="text-2xl font-bold mb-4" 
+                    <h3 class="result-title" 
                         x-text="forceChallenge.success ? '挑戰成功！' : '時間到！'"></h3>
-                    <p class="text-lg mb-6">
-                        你的得分：<span class="font-bold" x-text="forceChallenge.score"></span> / <span x-text="forceChallenge.target"></span>
+                    <p class="result-score">
+                        你的得分：<span class="score-highlight" x-text="forceChallenge.score"></span> / <span x-text="forceChallenge.target"></span>
                     </p>
-                    <div class="space-x-4">
-                        <button @click="retryForceChallenge()" 
-                                class="px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg transition-all duration-300">
+                    <div class="result-actions">
+                        <button @click="retryForceChallenge()" class="action-btn retry">
                             <i class="fas fa-redo mr-2"></i>再次挑戰
                         </button>
-                        <button @click="endForceChallenge()" 
-                                class="px-6 py-3 bg-gray-500 hover:bg-gray-600 rounded-lg transition-all duration-300">
+                        <button @click="endForceChallenge()" class="action-btn return">
                             <i class="fas fa-home mr-2"></i>返回
                         </button>
                     </div>
                 </div>
                 
                 <!-- 強迫學習統計 -->
-                <div class="glass-morphism rounded-xl p-6 text-white">
-                    <h3 class="text-xl font-bold mb-4">
+                <div class="force-stats">
+                    <h3 class="stats-title">
                         <i class="fas fa-chart-bar mr-2"></i>強迫學習統計
                     </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
-                            <div class="text-2xl font-bold" x-text="forceProgress.totalChallenges"></div>
-                            <div class="text-sm opacity-80">總挑戰次數</div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" x-text="forceProgress.totalChallenges"></div>
+                            <div class="stat-label">總挑戰次數</div>
                         </div>
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
-                            <div class="text-2xl font-bold" x-text="forceProgress.successRate + '%'"></div>
-                            <div class="text-sm opacity-80">成功率</div>
+                        <div class="stat-item">
+                            <div class="stat-value" x-text="forceProgress.successRate + '%'"></div>
+                            <div class="stat-label">成功率</div>
                         </div>
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
-                            <div class="text-2xl font-bold" x-text="forceProgress.bestScore"></div>
-                            <div class="text-sm opacity-80">最佳得分</div>
+                        <div class="stat-item">
+                            <div class="stat-value" x-text="forceProgress.bestScore"></div>
+                            <div class="stat-label">最佳得分</div>
                         </div>
                     </div>
                 </div>
@@ -781,50 +526,49 @@
              x-transition:leave-start="" 
              x-transition:leave-end="module-fade-leave-to">
             
-            <h2 class="text-3xl font-bold text-white text-center mb-8 floating">
+            <h2 class="module-title floating">
                 <i class="fas fa-tasks mr-3"></i>理解測驗
             </h2>
             
             <div class="max-w-3xl mx-auto">
                 <!-- 測驗進行中 -->
-                <div x-show="!quizCompleted" class="glass-morphism rounded-xl p-6 text-white">
-                    <div class="mb-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="text-lg font-semibold">
+                <div x-show="!quizCompleted" class="quiz-active">
+                    <div class="quiz-header">
+                        <div class="quiz-progress-info">
+                            <span class="progress-text">
                                 問題 <span x-text="currentQuestionIndex + 1"></span> / <span x-text="questions.length"></span>
                             </span>
-                            <div class="text-sm opacity-70">
+                            <div class="quiz-timer">
                                 <i class="fas fa-clock mr-1"></i>
                                 <span x-text="formatTime(quizTimer)"></span>
                             </div>
                         </div>
                         
-                        <div class="force-progress mb-4">
-                            <div class="h-full bg-blue-400 transition-all duration-500" 
+                        <div class="quiz-progress-bar">
+                            <div class="progress-fill" 
                                  :style="`width: ${((currentQuestionIndex + 1) / questions.length) * 100}%`"></div>
                         </div>
                         
-                        <h3 class="text-xl font-semibold mb-6" x-text="currentQuestionData.question"></h3>
+                        <h3 class="question-title" x-text="currentQuestionData.question"></h3>
                     </div>
                     
-                    <div class="space-y-4 mb-6">
+                    <div class="quiz-options">
                         <template x-for="(option, index) in currentQuestionData.options" :key="index">
                             <button @click="selectAnswer(index)"
                                     :disabled="userAnswers[currentQuestionIndex] !== null"
-                                    class="w-full text-left p-4 rounded-lg transition-all duration-300 option-button"
+                                    class="option-button"
                                     :class="{
                                         'correct': userAnswers[currentQuestionIndex] !== null && index === currentQuestionData.correctAnswer,
                                         'incorrect': userAnswers[currentQuestionIndex] !== null && index === userAnswers[currentQuestionIndex] && index !== currentQuestionData.correctAnswer,
-                                        'bg-white bg-opacity-20 hover:bg-opacity-30': userAnswers[currentQuestionIndex] === null,
-                                        'bg-white bg-opacity-10': userAnswers[currentQuestionIndex] !== null && index !== userAnswers[currentQuestionIndex] && index !== currentQuestionData.correctAnswer
+                                        'neutral': userAnswers[currentQuestionIndex] !== null && index !== userAnswers[currentQuestionIndex] && index !== currentQuestionData.correctAnswer
                                     }">
-                                <span class="font-bold mr-3" x-text="String.fromCharCode(65 + index) + '.'"></span>
-                                <span x-text="option"></span>
+                                <span class="option-letter" x-text="String.fromCharCode(65 + index) + '.'"></span>
+                                <span class="option-text" x-text="option"></span>
                                 <template x-if="userAnswers[currentQuestionIndex] !== null && index === currentQuestionData.correctAnswer">
-                                    <i class="fas fa-check text-green-400 float-right mt-1"></i>
+                                    <i class="fas fa-check option-icon correct"></i>
                                 </template>
                                 <template x-if="userAnswers[currentQuestionIndex] !== null && index === userAnswers[currentQuestionIndex] && index !== currentQuestionData.correctAnswer">
-                                    <i class="fas fa-times text-red-400 float-right mt-1"></i>
+                                    <i class="fas fa-times option-icon incorrect"></i>
                                 </template>
                             </button>
                         </template>
@@ -832,27 +576,27 @@
                     
                     <!-- 解析 -->
                     <div x-show="userAnswers[currentQuestionIndex] !== null" 
-                         class="bg-blue-500 bg-opacity-20 border-l-4 border-blue-400 rounded-lg p-4 mb-6" 
+                         class="quiz-explanation" 
                          x-transition>
-                        <h4 class="font-bold text-blue-200 mb-2">
+                        <h4 class="explanation-title">
                             <i class="fas fa-lightbulb mr-2"></i>解析
                         </h4>
-                        <p x-text="currentQuestionData.explanation"></p>
+                        <p class="explanation-text" x-text="currentQuestionData.explanation"></p>
                     </div>
 
                     <!-- 導航按鈕 -->
-                    <div class="flex justify-end space-x-4">
+                    <div class="quiz-navigation">
                         <template x-if="currentQuestionIndex < questions.length - 1">
                             <button @click="nextQuestion()"
                                     :disabled="userAnswers[currentQuestionIndex] === null"
-                                    class="px-6 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-500 disabled:cursor-not-allowed rounded-lg transition-all duration-300">
+                                    class="nav-btn next">
                                 下一題 <i class="fas fa-chevron-right ml-2"></i>
                             </button>
                         </template>
                         <template x-if="currentQuestionIndex === questions.length - 1">
                             <button @click="finishQuiz()"
                                     :disabled="userAnswers[currentQuestionIndex] === null"
-                                    class="px-6 py-3 bg-green-500 hover:bg-green-600 disabled:bg-gray-500 disabled:cursor-not-allowed rounded-lg transition-all duration-300">
+                                    class="nav-btn finish">
                                 完成測驗 <i class="fas fa-check-circle ml-2"></i>
                             </button>
                         </template>
@@ -860,36 +604,36 @@
                 </div>
 
                 <!-- 測驗結果 -->
-                <div x-show="quizCompleted" class="glass-morphism rounded-xl p-8 text-white text-center">
-                    <div class="text-6xl mb-6">
-                        <i :class="getScoreIcon()" :style="getScoreColor()"></i>
-                    </div>
-                    <h3 class="text-3xl font-bold mb-4">測驗完成！</h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                            <div class="text-3xl font-bold" x-text="quizScore"></div>
-                            <div class="text-sm opacity-80">正確答案</div>
+                <div x-show="quizCompleted" class="quiz-results">
+                    <div class="result-header">
+                        <div class="result-icon">
+                            <i :class="getScoreIcon()" :style="getScoreColor()"></i>
                         </div>
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                            <div class="text-3xl font-bold" x-text="getAccuracyRate() + '%'"></div>
-                            <div class="text-sm opacity-80">準確率</div>
-                        </div>
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
-                            <div class="text-3xl font-bold" x-text="formatTime(quizTimer)"></div>
-                            <div class="text-sm opacity-80">用時</div>
-                        </div>
+                        <h3 class="result-title">測驗完成！</h3>
                     </div>
                     
-                    <p class="text-xl mb-8" x-text="getQuizFeedback()"></p>
+                    <div class="result-stats">
+                        <div class="result-stat">
+                            <div class="stat-number" x-text="quizScore"></div>
+                            <div class="stat-label">正確答案</div>
+                        </div>
+                        <div class="result-stat">
+                            <div class="stat-number" x-text="getAccuracyRate() + '%'"></div>
+                            <div class="stat-label">準確率</div>
+                        </div>
+                        <div class="result-stat">
+                            <div class="stat-number" x-text="formatTime(quizTimer)"></div>
+                            <div class="stat-label">用時</div>
+                        </div>
+                    </div>
                     
-                    <div class="space-x-4">
-                        <button @click="retakeQuiz()" 
-                                class="px-8 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg transition-all duration-300 transform hover:scale-105">
+                    <p class="result-feedback" x-text="getQuizFeedback()"></p>
+                    
+                    <div class="result-actions">
+                        <button @click="retakeQuiz()" class="action-btn retry">
                             <i class="fas fa-redo mr-2"></i>重新測驗
                         </button>
-                        <button @click="currentModule = 'dashboard'" 
-                                class="px-8 py-3 bg-green-500 hover:bg-green-600 rounded-lg transition-all duration-300 transform hover:scale-105">
+                        <button @click="currentModule = 'dashboard'" class="action-btn dashboard">
                             <i class="fas fa-chart-line mr-2"></i>查看統計
                         </button>
                     </div>
@@ -900,416 +644,7 @@
     </main>
 
     <!-- JavaScript -->
-    <script>
-        function qiaomuApp() {
-            return {
-                // 基本狀態
-                currentModule: 'dashboard',
-                currentUser: {
-                    name: localStorage.getItem('username') || '學習者',
-                    email: localStorage.getItem('email') || 'user@demo.com'
-                },
-                learningStreak: 7,
-
-                // 單字學習
-                words: [
-                    { 
-                        word: 'native', 
-                        phonetic: '/ˈneɪtɪv/', 
-                        definition: '本地的；天生的；土生土長的', 
-                        etymology: '來自拉丁語 nativus "天生的，自然的"', 
-                        sentence: 'This is a truly AI Native browser.' 
-                    },
-                    { 
-                        word: 'browser', 
-                        phonetic: '/ˈbraʊzər/', 
-                        definition: '瀏覽器；瀏覽者', 
-                        etymology: '動詞 browse + -er 後綴', 
-                        sentence: 'You need an invitation code for the Dia browser.' 
-                    },
-                    { 
-                        word: 'invitation', 
-                        phonetic: '/ˌɪnvɪˈteɪʃən/', 
-                        definition: '邀請；請帖；邀請函', 
-                        etymology: '來自拉丁語 invitare "邀請"', 
-                        sentence: 'Everyone should try to get an invitation code.' 
-                    },
-                    { 
-                        word: 'encompass', 
-                        phonetic: '/ɪnˈkʌmpəs/', 
-                        definition: '包含；環繞；涵蓋', 
-                        etymology: 'en- "使進入" + compass "範圍"', 
-                        sentence: 'Questions that encompass all the content.' 
-                    },
-                    { 
-                        word: 'extract', 
-                        phonetic: '/ɪkˈstrækt/', 
-                        definition: '提取；摘錄；精華', 
-                        etymology: 'ex- "出" + tract "拉" = 拉出', 
-                        sentence: 'Extract all the stories from the text.' 
-                    }
-                ],
-                currentWordIndex: 0,
-                wordCardFlipped: false,
-
-                // 費曼學習
-                feynmanWordIndex: -1,
-                feynmanExplanation: '',
-                feynmanFeedback: '',
-                feynmanHistory: [],
-                feynmanProgress: {
-                    completed: 0,
-                    total: 5
-                },
-
-                // 強迫學習
-                forceChallenge: {
-                    active: false,
-                    type: '',
-                    timeLeft: 0,
-                    totalTime: 0,
-                    words: [],
-                    currentQuestion: null,
-                    score: 0,
-                    target: 0,
-                    completed: false,
-                    success: false
-                },
-                forceProgress: {
-                    level: 1,
-                    totalChallenges: 0,
-                    successRate: 0,
-                    bestScore: 0
-                },
-
-                // 測驗
-                questions: [
-                    {
-                        question: "什麼是 'native' 這個單字最常見的含義？",
-                        options: ["外國的", "本地的", "現代的", "複雜的"],
-                        correctAnswer: 1,
-                        explanation: "'native' 最常見的含義是本地的、天生的，指某地原產的或與生俱來的特質。"
-                    },
-                    {
-                        question: "單字 'encompass' 的詞根含義是什麼？",
-                        options: ["拉出", "使進入", "分離", "連接"],
-                        correctAnswer: 1,
-                        explanation: "'encompass' 由 en-（使進入）+ compass（範圍）組成，表示包含或涵蓋。"
-                    },
-                    {
-                        question: "下列哪個單字與 'extract' 的詞根構成最相似？",
-                        options: ["attract", "contract", "subtract", "以上皆是"],
-                        correctAnswer: 3,
-                        explanation: "這些單字都含有拉丁語詞根 'tract'，意思是拉、拖拽。"
-                    }
-                ],
-                currentQuestionIndex: 0,
-                userAnswers: {},
-                quizScore: 0,
-                quizCompleted: false,
-                quizTimer: 0,
-
-                // 初始化
-                init() {
-                    this.loadUserData();
-                    this.startQuizTimer();
-                    this.questions.forEach((_, index) => {
-                        this.userAnswers[index] = null;
-                    });
-                },
-
-                // 用戶數據管理
-                loadUserData() {
-                    const savedData = localStorage.getItem('qiaomu-user-data');
-                    if (savedData) {
-                        const userData = JSON.parse(savedData);
-                        this.learningStreak = userData.learningStreak || 7;
-                        this.feynmanHistory = userData.feynmanHistory || [];
-                        this.forceProgress = userData.forceProgress || this.forceProgress;
-                    }
-                },
-
-                saveUserData() {
-                    const userData = {
-                        learningStreak: this.learningStreak,
-                        feynmanHistory: this.feynmanHistory,
-                        forceProgress: this.forceProgress,
-                        lastSaved: new Date().toISOString()
-                    };
-                    localStorage.setItem('qiaomu-user-data', JSON.stringify(userData));
-                },
-
-                // 單字學習方法
-                get currentWordData() {
-                    return this.words[this.currentWordIndex] || {};
-                },
-
-                nextWord() {
-                    if (this.currentWordIndex < this.words.length - 1) {
-                        this.currentWordIndex++;
-                        this.wordCardFlipped = false;
-                    }
-                },
-
-                prevWord() {
-                    if (this.currentWordIndex > 0) {
-                        this.currentWordIndex--;
-                        this.wordCardFlipped = false;
-                    }
-                },
-
-                // 費曼學習方法
-                get currentFeynmanWord() {
-                    return this.words[this.feynmanWordIndex] || {};
-                },
-
-                selectFeynmanWord(index) {
-                    this.feynmanWordIndex = index;
-                    this.feynmanExplanation = '';
-                    this.feynmanFeedback = '';
-                },
-
-                checkFeynmanExplanation() {
-                    if (this.feynmanExplanation.length > 100) {
-                        this.feynmanFeedback = "很好！你的解釋很詳細。記住要用簡單的語言，就像在教小孩一樣。";
-                    } else if (this.feynmanExplanation.length > 50) {
-                        this.feynmanFeedback = "不錯的開始！可以再詳細一些，增加一些例子會更好。";
-                    } else {
-                        this.feynmanFeedback = "";
-                    }
-                },
-
-                submitFeynmanExplanation() {
-                    const rating = Math.floor(Math.random() * 2) + 4; // 4-5 星評分
-                    const feedback = rating === 5 ? "優秀的解釋！" : "很好的嘗試！";
-                    
-                    this.feynmanHistory.unshift({
-                        word: this.currentFeynmanWord.word,
-                        explanation: this.feynmanExplanation,
-                        rating: rating,
-                        feedback: feedback,
-                        date: new Date().toLocaleDateString('zh-TW')
-                    });
-                    
-                    this.feynmanProgress.completed++;
-                    this.feynmanWordIndex = -1;
-                    this.feynmanExplanation = '';
-                    this.feynmanFeedback = '';
-                    this.saveUserData();
-                    
-                    alert(`費曼解釋已提交！獲得 ${rating} 星評價：${feedback}`);
-                },
-
-                startFeynmanExplanation() {
-                    this.currentModule = 'feynman';
-                    this.selectFeynmanWord(this.currentWordIndex);
-                },
-
-                // 強迫學習方法
-                startForceChallenge(type) {
-                    this.forceChallenge = {
-                        active: true,
-                        type: type,
-                        timeLeft: type === 'memory' ? 60 : 30,
-                        totalTime: type === 'memory' ? 60 : 30,
-                        words: type === 'memory' ? this.getRandomWords(10) : [],
-                        currentQuestion: type === 'quiz' ? this.getRandomQuestion() : null,
-                        score: 0,
-                        target: type === 'memory' ? 10 : 5,
-                        completed: false,
-                        success: false
-                    };
-                    
-                    this.startForceTimer();
-                },
-
-                startForceTimer() {
-                    const timer = setInterval(() => {
-                        this.forceChallenge.timeLeft--;
-                        
-                        if (this.forceChallenge.timeLeft <= 0) {
-                            clearInterval(timer);
-                            this.completeForceChallenge();
-                        }
-                    }, 1000);
-                },
-
-                answerForceQuestion(answerIndex) {
-                    if (answerIndex === this.forceChallenge.currentQuestion.correctAnswer) {
-                        this.forceChallenge.score++;
-                    }
-                    
-                    if (this.forceChallenge.score >= this.forceChallenge.target) {
-                        this.forceChallenge.success = true;
-                        this.completeForceChallenge();
-                    } else {
-                        // 下一題
-                        this.forceChallenge.currentQuestion = this.getRandomQuestion();
-                    }
-                },
-
-                completeForceChallenge() {
-                    this.forceChallenge.completed = true;
-                    this.forceChallenge.active = false;
-                    
-                    if (this.forceChallenge.score >= this.forceChallenge.target) {
-                        this.forceChallenge.success = true;
-                    }
-                    
-                    // 更新統計
-                    this.forceProgress.totalChallenges++;
-                    if (this.forceChallenge.success) {
-                        this.forceProgress.level = Math.min(this.forceProgress.level + 1, 10);
-                    }
-                    this.forceProgress.bestScore = Math.max(this.forceProgress.bestScore, this.forceChallenge.score);
-                    this.forceProgress.successRate = Math.round(
-                        (this.forceProgress.successRate * (this.forceProgress.totalChallenges - 1) + 
-                         (this.forceChallenge.success ? 100 : 0)) / this.forceProgress.totalChallenges
-                    );
-                    
-                    this.saveUserData();
-                },
-
-                retryForceChallenge() {
-                    const type = this.forceChallenge.type;
-                    this.endForceChallenge();
-                    this.startForceChallenge(type);
-                },
-
-                endForceChallenge() {
-                    this.forceChallenge = {
-                        active: false,
-                        type: '',
-                        timeLeft: 0,
-                        totalTime: 0,
-                        words: [],
-                        currentQuestion: null,
-                        score: 0,
-                        target: 0,
-                        completed: false,
-                        success: false
-                    };
-                },
-
-                getRandomWords(count) {
-                    const shuffled = [...this.words].sort(() => Math.random() - 0.5);
-                    return shuffled.slice(0, Math.min(count, this.words.length));
-                },
-
-                getRandomQuestion() {
-                    const randomIndex = Math.floor(Math.random() * this.questions.length);
-                    return this.questions[randomIndex];
-                },
-
-                // 測驗方法
-                get currentQuestionData() {
-                    return this.questions[this.currentQuestionIndex] || {};
-                },
-
-                startQuizTimer() {
-                    setInterval(() => {
-                        if (!this.quizCompleted) {
-                            this.quizTimer++;
-                        }
-                    }, 1000);
-                },
-
-                selectAnswer(index) {
-                    if (this.userAnswers[this.currentQuestionIndex] === null) {
-                        this.userAnswers[this.currentQuestionIndex] = index;
-                    }
-                },
-
-                nextQuestion() {
-                    if (this.currentQuestionIndex < this.questions.length - 1) {
-                        this.currentQuestionIndex++;
-                    }
-                },
-
-                finishQuiz() {
-                    this.calculateScore();
-                    this.quizCompleted = true;
-                },
-
-                calculateScore() {
-                    let score = 0;
-                    this.questions.forEach((question, index) => {
-                        if (this.userAnswers[index] === question.correctAnswer) {
-                            score++;
-                        }
-                    });
-                    this.quizScore = score;
-                },
-
-                retakeQuiz() {
-                    this.currentQuestionIndex = 0;
-                    this.quizCompleted = false;
-                    this.quizScore = 0;
-                    this.quizTimer = 0;
-                    this.questions.forEach((_, index) => {
-                        this.userAnswers[index] = null;
-                    });
-                },
-
-                // 統計方法
-                getAccuracyRate() {
-                    if (this.questions.length === 0) return 0;
-                    return Math.round((this.quizScore / this.questions.length) * 100);
-                },
-
-                getRemainingWords() {
-                    return Math.max(0, this.words.length - this.currentWordIndex - 1);
-                },
-
-                getQuizFeedback() {
-                    const percentage = this.getAccuracyRate();
-                    if (percentage === 100) return "🎉 完美！你完全掌握了內容！";
-                    if (percentage >= 80) return "🌟 優秀！你的理解很到位！";
-                    if (percentage >= 60) return "👍 不錯！繼續加油！";
-                    return "💪 需要多加練習，不要放棄！";
-                },
-
-                getScoreIcon() {
-                    const percentage = this.getAccuracyRate();
-                    if (percentage >= 90) return 'fas fa-trophy';
-                    if (percentage >= 70) return 'fas fa-medal';
-                    if (percentage >= 50) return 'fas fa-star';
-                    return 'fas fa-heart';
-                },
-
-                getScoreColor() {
-                    const percentage = this.getAccuracyRate();
-                    if (percentage >= 90) return 'color: #ffd700;';
-                    if (percentage >= 70) return 'color: #c0c0c0;';
-                    if (percentage >= 50) return 'color: #cd7f32;';
-                    return 'color: #ff6b6b;';
-                },
-
-                // 工具方法
-                formatTime(seconds) {
-                    const mins = Math.floor(seconds / 60);
-                    const secs = seconds % 60;
-                    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                },
-
-                resetToHome() {
-                    this.currentModule = 'dashboard';
-                    this.currentWordIndex = 0;
-                    this.wordCardFlipped = false;
-                }
-            };
-        }
-
-        // 頁面載入完成後初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            // 檢查登入狀態
-            if (!localStorage.getItem('username')) {
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            console.log('南臺科技大學英語雙向費曼學習平台已載入');
-        });
-    </script>
+    <script src="scripts/app.js"></script>
+    <script src="scripts/modules.js"></script>
 </body>
 </html>
