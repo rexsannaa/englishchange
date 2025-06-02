@@ -1,566 +1,771 @@
 /**
- * 喬木英語學習系統 - JavaScript 主程式
- * 使用 Alpine.js 進行狀態管理和互動功能
+ * 喬木英語 - 雙向費曼學習平台
+ * 主要 JavaScript 功能模組
  */
 
-function qiaomuApp() {
-    return {
-        // 應用程式狀態
-        currentModule: 'words',
-        readingMode: 'english', // 'english', 'chinese', 'bilingual'
-        currentDate: new Date().toLocaleDateString('zh-TW'),
-        mobileMenuOpen: false,
+// 主應用程式類
+class QiaomuEnglishApp {
+    constructor() {
+        this.currentUser = this.loadUserData();
+        this.learningData = this.loadLearningData();
+        this.settings = this.loadSettings();
+        this.initializeEventListeners();
+        this.startPerformanceMonitoring();
+    }
+
+    // 用戶數據管理
+    loadUserData() {
+        const defaultUser = {
+            name: localStorage.getItem('username') || '學習者',
+            email: localStorage.getItem('email') || 'user@demo.com',
+            loginTime: localStorage.getItem('loginTime') || new Date().toISOString(),
+            avatar: null,
+            preferences: {
+                theme: 'auto',
+                fontSize: 'medium',
+                animations: true,
+                soundEffects: true
+            }
+        };
+
+        const savedUser = localStorage.getItem('qiaomu-user-profile');
+        return savedUser ? { ...defaultUser, ...JSON.parse(savedUser) } : defaultUser;
+    }
+
+    loadLearningData() {
+        const defaultData = {
+            totalWordsLearned: 0,
+            totalQuizzesTaken: 0,
+            totalFeynmanExplanations: 0,
+            totalForceChallenges: 0,
+            currentStreak: 1,
+            bestStreak: 1,
+            totalStudyTime: 0,
+            lastStudyDate: new Date().toDateString(),
+            achievements: [],
+            weeklyGoals: {
+                words: 50,
+                quizzes: 10,
+                feynman: 5,
+                force: 3
+            },
+            progress: {
+                words: 0,
+                quizzes: 0,
+                feynman: 0,
+                force: 0
+            }
+        };
+
+        const savedData = localStorage.getItem('qiaomu-learning-data');
+        return savedData ? { ...defaultData, ...JSON.parse(savedData) } : defaultData;
+    }
+
+    loadSettings() {
+        const defaultSettings = {
+            autoSave: true,
+            notifications: true,
+            studyReminders: true,
+            difficultyLevel: 'intermediate',
+            preferredLanguage: 'zh-TW',
+            studyGoalMinutes: 30,
+            breakReminders: true
+        };
+
+        const savedSettings = localStorage.getItem('qiaomu-settings');
+        return savedSettings ? { ...defaultSettings, ...JSON.parse(savedSettings) } : defaultSettings;
+    }
+
+    // 數據保存
+    saveUserData() {
+        localStorage.setItem('qiaomu-user-profile', JSON.stringify(this.currentUser));
+    }
+
+    saveLearningData() {
+        localStorage.setItem('qiaomu-learning-data', JSON.stringify(this.learningData));
+    }
+
+    saveSettings() {
+        localStorage.setItem('qiaomu-settings', JSON.stringify(this.settings));
+    }
+
+    // 學習統計更新
+    updateLearningStats(type, value = 1) {
+        const today = new Date().toDateString();
         
-        // 觸控手勢變數
-        touchStartX: 0,
-        touchEndX: 0,
-        touchStartY: 0,
-        touchEndY: 0,
-
-        // 單字學習狀態
-        words: [
-            // 從範例文字中提取的 CET4+ 單字
-            { 
-                word: 'native', 
-                phonetic: '/ˈneɪtɪv/', 
-                definition: '本地的；天生的；土生土長的', 
-                etymology: '來自拉丁語 nativus "天生的，自然的"', 
-                sentence: 'This is a truly AI Native browser.' 
-            },
-            { 
-                word: 'browser', 
-                phonetic: '/ˈbraʊzər/', 
-                definition: '瀏覽器；瀏覽者', 
-                etymology: '動詞 browse + -er 後綴', 
-                sentence: 'You need an invitation code for the Dia browser.' 
-            },
-            { 
-                word: 'invitation', 
-                phonetic: '/ˌɪnvɪˈteɪʃən/', 
-                definition: '邀請；請帖；邀請函', 
-                etymology: '來自拉丁語 invitare "邀請"', 
-                sentence: 'Everyone should try to get an invitation code.' 
-            },
-            { 
-                word: 'podcast', 
-                phonetic: '/ˈpɒdkɑːst/', 
-                definition: '播客；音頻節目', 
-                etymology: 'iPod + broadcast 合成詞', 
-                sentence: 'I used NotebookLM for podcast summaries before.' 
-            },
-            { 
-                word: 'encompass', 
-                phonetic: '/ɪnˈkʌmpəs/', 
-                definition: '包含；環繞；涵蓋', 
-                etymology: 'en- "使進入" + compass "範圍"', 
-                sentence: 'Questions that encompass all the content.' 
-            },
-            { 
-                word: 'default', 
-                phonetic: '/dɪˈfɔːlt/', 
-                definition: '默認；預設值；違約', 
-                etymology: '來自古法語 defalte "缺點，缺少"', 
-                sentence: 'It\'s ad-free by default, amazing!' 
-            },
-            { 
-                word: 'extract', 
-                phonetic: '/ɪkˈstrækt/', 
-                definition: '提取；摘錄；精華', 
-                etymology: 'ex- "出" + tract "拉" = 拉出', 
-                sentence: 'Extract all the stories from the text.' 
+        // 更新連續學習天數
+        if (this.learningData.lastStudyDate !== today) {
+            const lastDate = new Date(this.learningData.lastStudyDate);
+            const currentDate = new Date(today);
+            const diffTime = Math.abs(currentDate - lastDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1) {
+                this.learningData.currentStreak++;
+            } else if (diffDays > 1) {
+                this.learningData.currentStreak = 1;
             }
-        ],
-        currentWordIndex: 0,
-        wordCardFlipped: false,
+            
+            this.learningData.bestStreak = Math.max(
+                this.learningData.bestStreak, 
+                this.learningData.currentStreak
+            );
+            this.learningData.lastStudyDate = today;
+        }
 
-        // 閱讀狀態
-        showEnglish: true,
-        rawEnglishText: `Oh wow! Everyone should definitely try to get an invitation code for the Dia browser.
+        // 更新具體統計
+        switch (type) {
+            case 'word':
+                this.learningData.totalWordsLearned += value;
+                this.learningData.progress.words += value;
+                break;
+            case 'quiz':
+                this.learningData.totalQuizzesTaken += value;
+                this.learningData.progress.quizzes += value;
+                break;
+            case 'feynman':
+                this.learningData.totalFeynmanExplanations += value;
+                this.learningData.progress.feynman += value;
+                break;
+            case 'force':
+                this.learningData.totalForceChallenges += value;
+                this.learningData.progress.force += value;
+                break;
+            case 'studyTime':
+                this.learningData.totalStudyTime += value;
+                break;
+        }
 
-It's a truly AI Native browser.
+        this.checkAchievements();
+        this.saveLearningData();
+    }
 
-Use Case: Podcast summaries. I used NotebookLM before.
-
-The webpage directly asks: "Propose 20 questions about this content, such that the AI's answers will encompass all the text of this podcast."
-
-Follow-up question: "Answer the first question." And it actually answered!
-
-Asked again: "Extract all the stories." It delivered instantly.
-
-Ad-free by default, awesome!`,
-        
-        rawChineseText: `我去！大家一定要想辦法搞個 Dia 瀏覽器的邀請碼。
-
-真正的 AI Native 瀏覽器。
-
-使用案例：播客總結，以前用 NotebookLM。
-
-網頁直接問："針對這個內容提出 20 個問題，讓 AI 回答後能涵蓋這個播客文本的所有內容"
-
-追問："回答第一個問題"，真的回答了！
-
-再問："提煉所有故事"，秒出。
-
-默認無廣告，太棒了！`,
-        
-        formattedEnglishText: '',
-        formattedChineseText: '',
-        highlightedWords: ['native', 'browser', 'invitation', 'podcast', 'encompass', 'default', 'extract'],
-        popupWord: '',
-        popupX: 0,
-        popupY: 0,
-
-        // 測驗狀態
-        questions: [
+    // 成就系統
+    checkAchievements() {
+        const achievements = [
             {
-                question: "什麼是文中提到的 Dia 瀏覽器的具體應用？",
-                options: ["影片編輯", "播客總結", "程式開發", "社群媒體管理"],
-                correctAnswer: 1,
-                explanation: "文中明確提到 'Use Case: Podcast summaries'，表明 Dia 瀏覽器用於播客總結相關的任務。"
+                id: 'first_word',
+                name: '初學者',
+                description: '學習第一個單字',
+                icon: '🌱',
+                condition: () => this.learningData.totalWordsLearned >= 1
             },
             {
-                question: "用戶對於網頁問答功能最印象深刻的是什麼？",
-                options: ["瀏覽器的速度", "允許的問題數量", "AI 直接回答和提取資訊的能力", "使用者介面的設計"],
-                correctAnswer: 2,
-                explanation: "用戶表達驚訝（'真的回答了！', '秒出'）對於 AI 能夠回答具體問題並基於網頁內容提取故事的能力。"
+                id: 'word_master_10',
+                name: '單字新手',
+                description: '學習 10 個單字',
+                icon: '📚',
+                condition: () => this.learningData.totalWordsLearned >= 10
             },
             {
-                question: "文章最後強調 Dia 瀏覽器的什麼重要優勢？",
-                options: ["速度很快", "AI 更好", "免費", "默認無廣告"],
-                correctAnswer: 3,
-                explanation: "文章以 '默認無廣告，太棒了！' 結尾，將此作為重要優勢突出。"
+                id: 'word_master_50',
+                name: '單字達人',
+                description: '學習 50 個單字',
+                icon: '🎓',
+                condition: () => this.learningData.totalWordsLearned >= 50
             },
             {
-                question: "用什麼術語來描述 Dia 瀏覽器的核心技術？",
-                options: ["Web 3.0", "AI Native", "雲端基礎", "開源"],
-                correctAnswer: 1,
-                explanation: "文中明確表示 '真正的 AI Native 瀏覽器'。"
+                id: 'streak_3',
+                name: '堅持三天',
+                description: '連續學習 3 天',
+                icon: '🔥',
+                condition: () => this.learningData.currentStreak >= 3
+            },
+            {
+                id: 'streak_7',
+                name: '一週戰士',
+                description: '連續學習 7 天',
+                icon: '⚡',
+                condition: () => this.learningData.currentStreak >= 7
+            },
+            {
+                id: 'feynman_master',
+                name: '費曼大師',
+                description: '完成 10 次費曼解釋',
+                icon: '🧠',
+                condition: () => this.learningData.totalFeynmanExplanations >= 10
+            },
+            {
+                id: 'force_warrior',
+                name: '強迫戰士',
+                description: '完成 5 次強迫學習挑戰',
+                icon: '💪',
+                condition: () => this.learningData.totalForceChallenges >= 5
+            },
+            {
+                id: 'quiz_expert',
+                name: '測驗專家',
+                description: '完成 20 次測驗',
+                icon: '🏆',
+                condition: () => this.learningData.totalQuizzesTaken >= 20
             }
-        ],
-        currentQuestionIndex: 0,
-        userAnswers: {},
-        quizScore: 0,
-        quizCompleted: false,
+        ];
 
-        // 成就狀態
-        posterVisible: false,
-        selectedPosterStyle: '',
-        posterData: {
-            title: "學習報告",
-            quote: "千里之行，始於足下。"
-        },
-
-        // 初始化方法
-        init() {
-            // 初始化測驗答案
-            this.questions.forEach((_, index) => {
-                this.userAnswers[index] = null;
-            });
-            
-            // 格式化閱讀文字
-            this.formatReadingText();
-            
-            console.log("喬木英語應用程式已初始化");
-        },
-
-        // 單字學習方法
-        nextWord() {
-            if (this.currentWordIndex < this.words.length - 1) {
-                this.currentWordIndex++;
-                this.wordCardFlipped = false;
+        achievements.forEach(achievement => {
+            if (!this.learningData.achievements.includes(achievement.id) && 
+                achievement.condition()) {
+                this.unlockAchievement(achievement);
             }
-        },
+        });
+    }
 
-        prevWord() {
-            if (this.currentWordIndex > 0) {
-                this.currentWordIndex--;
-                this.wordCardFlipped = false;
-            }
-        },
+    unlockAchievement(achievement) {
+        this.learningData.achievements.push(achievement.id);
+        this.showAchievementNotification(achievement);
+        this.saveLearningData();
+    }
 
-        get currentWordData() {
-            if (this.words.length === 0) {
-                return { 
-                    word: '', 
-                    phonetic: '', 
-                    definition: '', 
-                    etymology: '', 
-                    sentence: '' 
-                };
-            }
-            return this.words[this.currentWordIndex];
-        },
-
-        // 閱讀方法
-        formatReadingText() {
-            // 使用 Marked.js 轉換 Markdown 為 HTML
-            const formatOptions = { breaks: true, gfm: true };
-            let htmlEn = marked.parse(this.rawEnglishText, formatOptions);
-            let htmlZh = marked.parse(this.rawChineseText, formatOptions);
-
-            // 為英文文字添加高亮標記
-            this.highlightedWords.forEach(word => {
-                const regex = new RegExp(`\\b(${word})\\b`, 'gi');
-                htmlEn = htmlEn.replace(regex, `<span class="highlighted-word" data-word="${word.toLowerCase()}">$1</span>`);
-            });
-
-            this.formattedEnglishText = htmlEn;
-            this.formattedChineseText = htmlZh;
-        },
-
-        handleWordClick(event) {
-            const target = event.target;
-            if (target.classList.contains('highlighted-word')) {
-                const word = target.dataset.word;
-                const definition = this.getWordDefinition(word);
-                if (definition) {
-                    this.popupWord = target.innerText;
-                    // 在點擊的單字附近定位彈出視窗
-                    const rect = target.getBoundingClientRect();
-                    this.popupX = rect.left + window.scrollX + rect.width / 2;
-                    this.popupY = rect.top + window.scrollY;
-                }
-            }
-        },
-
-        getWordDefinition(word) {
-            const lowerCaseWord = word.toLowerCase();
-            const foundWord = this.words.find(w => w.word.toLowerCase() === lowerCaseWord);
-            return foundWord ? foundWord.definition : '暫無釋義';
-        },
-
-        getBilingualParagraphs() {
-            const englishParagraphs = this.rawEnglishText.split('\n\n');
-            const chineseParagraphs = this.rawChineseText.split('\n\n');
-            return englishParagraphs.map((english, index) => ({
-                english: this.formatParagraphWithHighlights(english),
-                chinese: chineseParagraphs[index] || ''
-            }));
-        },
-
-        formatParagraphWithHighlights(text) {
-            let formatted = text;
-            this.highlightedWords.forEach(word => {
-                const regex = new RegExp(`\\b(${word})\\b`, 'gi');
-                formatted = formatted.replace(regex, `<span class="highlighted-word" data-word="${word.toLowerCase()}">$1</span>`);
-            });
-            return formatted;
-        },
-
-        // 測驗方法
-        get currentQuestionData() {
-            if (this.questions.length === 0) {
-                return { 
-                    question: '', 
-                    options: [], 
-                    correctAnswer: -1, 
-                    explanation: '' 
-                };
-            }
-            return this.questions[this.currentQuestionIndex];
-        },
-
-        selectAnswer(index) {
-            if (this.userAnswers[this.currentQuestionIndex] === null) {
-                this.userAnswers[this.currentQuestionIndex] = index;
-            }
-        },
-
-        nextQuestion() {
-            if (this.currentQuestionIndex < this.questions.length - 1) {
-                this.currentQuestionIndex++;
-            }
-        },
-
-        finishQuiz() {
-            this.calculateScore();
-            this.quizCompleted = true;
-            // 滾動到結果區域
-            this.$nextTick(() => {
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            });
-        },
-
-        calculateScore() {
-            let score = 0;
-            this.questions.forEach((question, index) => {
-                if (this.userAnswers[index] === question.correctAnswer) {
-                    score++;
-                }
-            });
-            this.quizScore = score;
-        },
-
-        retakeQuiz() {
-            this.currentQuestionIndex = 0;
-            this.quizCompleted = false;
-            this.quizScore = 0;
-            // 重置答案
-            this.questions.forEach((_, index) => {
-                this.userAnswers[index] = null;
-            });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        },
-
-        getQuizFeedback() {
-            const percentage = (this.quizScore / this.questions.length) * 100;
-            if (percentage === 100) return "完美！你完全掌握了內容。";
-            if (percentage >= 75) return "很棒！對內容的理解非常到位。";
-            if (percentage >= 50) return "不錯，還有提升空間，再接再厲！";
-            return "需要多加練習哦，重新測試或回顧原文吧！";
-        },
-
-        // 成就方法
-        showPoster(style) {
-            this.selectedPosterStyle = style;
-            this.posterVisible = true;
-        },
-
-        getPosterContent() {
-            const quotes = {
-                'bold-modern': "突破極限，追求卓越，成就非凡！",
-                'cyberpunk': "知識就是力量，程式碼就是自由。",
-                'elegant-vintage': "教育不是為生活做準備；教育就是生活本身。",
-                'neo-futurism': "未來屬於那些不斷學習技能並創造性地結合它們的人。"
-            };
-
-            const difficultWords = this.getDifficultWords();
-
-            return `
-                <div class="poster-header">
-                    <h2 class="text-2xl font-bold mb-2">學習報告</h2>
-                    <p class="text-sm opacity-80">${this.currentDate}</p>
+    showAchievementNotification(achievement) {
+        // 創建成就通知
+        const notification = document.createElement('div');
+        notification.className = 'achievement-notification';
+        notification.innerHTML = `
+            <div class="achievement-content">
+                <div class="achievement-icon">${achievement.icon}</div>
+                <div class="achievement-text">
+                    <h4>成就解鎖！</h4>
+                    <h3>${achievement.name}</h3>
+                    <p>${achievement.description}</p>
                 </div>
-                
-                <div class="poster-stats">
-                    <div class="stat-card">
-                        <div class="stat-number">${this.words.length}</div>
-                        <div class="stat-label">今日單字</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">${this.quizScore}/${this.questions.length}</div>
-                        <div class="stat-label">測驗得分</div>
-                    </div>
-                </div>
-                
-                <div class="poster-words">
-                    <h3 class="text-base font-semibold mb-3">今日挑戰詞彙</h3>
-                    ${difficultWords.map(word => `
-                        <div class="word-card">
-                            <div class="word-main">
-                                <div class="word-text">${word.word}</div>
-                                <div class="word-phonetic">${word.phonetic}</div>
-                            </div>
-                            <div class="word-definition">${word.definition}</div>
-                        </div>
-                    `).join('')}
-                </div>
-                
-                <div class="poster-footer mt-auto">
-                    <p class="poster-quote text-center text-sm mb-3">${quotes[this.selectedPosterStyle]}</p>
-                    <div class="poster-branding text-center opacity-60">喬木英語</div>
-                </div>
-            `;
-        },
+            </div>
+        `;
 
-        getDifficultWords() {
-            // 根據單字長度和定義長度綜合評分
-            return this.words
-                .map(word => ({
-                    ...word,
-                    difficulty: word.word.length + word.definition.length
-                }))
-                .sort((a, b) => b.difficulty - a.difficulty)
-                .slice(0, 3); // 只返回最難的3個單字
-        },
+        // 添加樣式
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            transform: translateX(400px);
+            transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            max-width: 300px;
+        `;
 
-        // 觸控手勢處理
-        handleTouchStart(event) {
-            this.touchStartX = event.touches[0].clientX;
-            this.touchStartY = event.touches[0].clientY;
-        },
+        document.body.appendChild(notification);
 
-        handleTouchMove(event) {
-            this.touchEndX = event.touches[0].clientX;
-            this.touchEndY = event.touches[0].clientY;
-        },
+        // 動畫顯示
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
 
-        handleTouchEnd(context) {
-            const deltaX = this.touchEndX - this.touchStartX;
-            const deltaY = this.touchEndY - this.touchStartY;
+        // 自動隱藏
+        setTimeout(() => {
+            notification.style.transform = 'translateX(400px)';
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 500);
+        }, 4000);
 
-            // 只有在水平移動顯著且垂直移動不大時才識別為滑動
-            if (Math.abs(deltaX) > 50 && Math.abs(deltaY) < 50 && this.touchEndX !== 0) {
-                if (deltaX < -50) { // 左滑（下一個）
-                    if (context === 'words') {
-                        if (this.currentWordIndex < this.words.length - 1) {
-                            this.nextWord();
-                        } else {
-                            // 最後一個單字，自動切換到閱讀
-                            this.currentModule = 'reading';
-                        }
-                    } else if (context === 'reading' && !this.quizCompleted) {
-                        // 閱讀時左滑可以切換到測驗（如果已選擇答案）
-                        if (this.userAnswers[this.currentQuestionIndex] !== null && this.currentQuestionIndex < this.questions.length - 1) {
-                            this.nextQuestion();
-                        } else if (this.userAnswers[this.currentQuestionIndex] !== null && this.currentQuestionIndex === this.questions.length - 1) {
-                            this.finishQuiz();
-                        }
-                    }
-                } else if (deltaX > 50) { // 右滑（上一個）
-                    if (context === 'words') {
-                        this.prevWord();
-                    } else if (context === 'reading' && !this.quizCompleted) {
-                        // 閱讀時右滑回到上一題
-                        if (this.currentQuestionIndex > 0) {
-                            this.currentQuestionIndex--;
-                        }
-                    }
-                }
-            }
-            
-            // 重置觸控座標
-            this.touchStartX = 0;
-            this.touchEndX = 0;
-            this.touchStartY = 0;
-            this.touchEndY = 0;
-        },
+        // 播放成就音效（如果啟用）
+        if (this.currentUser.preferences.soundEffects) {
+            this.playAchievementSound();
+        }
+    }
 
-        // 實用工具方法
-        formatDate(date) {
-            return new Date(date).toLocaleDateString('zh-TW', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        },
+    // 音效管理
+    playAchievementSound() {
+        try {
+            // 使用 Web Audio API 創建簡單的成就音效
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
 
-        // 本地儲存方法（如果需要持久化）
-        saveProgress() {
-            const progressData = {
-                currentWordIndex: this.currentWordIndex,
-                quizScore: this.quizScore,
-                quizCompleted: this.quizCompleted,
-                userAnswers: this.userAnswers,
-                lastStudyDate: new Date().toISOString()
-            };
-            
-            try {
-                localStorage.setItem('qiaomu-english-progress', JSON.stringify(progressData));
-            } catch (error) {
-                console.warn('無法儲存進度到本地儲存:', error);
-            }
-        },
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
 
-        loadProgress() {
-            try {
-                const saved = localStorage.getItem('qiaomu-english-progress');
-                if (saved) {
-                    const progressData = JSON.parse(saved);
-                    
-                    // 檢查是否是同一天的學習記錄
-                    const savedDate = new Date(progressData.lastStudyDate);
-                    const today = new Date();
-                    const isSameDay = savedDate.toDateString() === today.toDateString();
-                    
-                    if (isSameDay) {
-                        this.currentWordIndex = progressData.currentWordIndex || 0;
-                        this.quizScore = progressData.quizScore || 0;
-                        this.quizCompleted = progressData.quizCompleted || false;
-                        this.userAnswers = progressData.userAnswers || {};
-                    }
-                }
-            } catch (error) {
-                console.warn('無法載入已儲存的進度:', error);
-            }
-        },
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
+            oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.2);
 
-        // 重置學習進度
-        resetProgress() {
-            this.currentWordIndex = 0;
-            this.currentQuestionIndex = 0;
-            this.quizScore = 0;
-            this.quizCompleted = false;
-            this.wordCardFlipped = false;
-            this.userAnswers = {};
-            this.currentModule = 'words';
-            
-            // 重新初始化測驗答案
-            this.questions.forEach((_, index) => {
-                this.userAnswers[index] = null;
-            });
-            
-            // 清除本地儲存
-            try {
-                localStorage.removeItem('qiaomu-english-progress');
-            } catch (error) {
-                console.warn('無法清除本地儲存:', error);
-            }
-        },
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
 
-        // 學習統計方法
-        getStudyStats() {
-            const wordsLearned = this.currentWordIndex + 1;
-            const completionRate = (wordsLearned / this.words.length) * 100;
-            const quizAccuracy = this.questions.length > 0 ? (this.quizScore / this.questions.length) * 100 : 0;
-            
-            return {
-                wordsLearned,
-                totalWords: this.words.length,
-                completionRate: Math.round(completionRate),
-                quizAccuracy: Math.round(quizAccuracy),
-                isCompleted: this.quizCompleted && completionRate === 100
-            };
-        },
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        } catch (error) {
+            console.log('無法播放音效:', error);
+        }
+    }
 
-        // 鍵盤快捷鍵支援
-        handleKeydown(event) {
-            // 只在特定模組中啟用快捷鍵
-            if (this.currentModule === 'words') {
-                switch (event.key) {
-                    case 'ArrowLeft':
-                        event.preventDefault();
-                        this.prevWord();
-                        break;
-                    case 'ArrowRight':
-                        event.preventDefault();
-                        this.nextWord();
-                        break;
-                    case ' ':
-                        event.preventDefault();
-                        this.wordCardFlipped = !this.wordCardFlipped;
-                        break;
-                }
-            } else if (this.currentModule === 'quiz' && !this.quizCompleted) {
-                // 測驗模組的數字鍵快捷鍵
-                const num = parseInt(event.key);
-                if (num >= 1 && num <= 4 && this.userAnswers[this.currentQuestionIndex] === null) {
-                    event.preventDefault();
-                    this.selectAnswer(num - 1);
-                }
+    // 性能監控
+    startPerformanceMonitoring() {
+        this.performanceMetrics = {
+            pageLoadTime: performance.now(),
+            interactionCount: 0,
+            errorCount: 0,
+            lastInteraction: Date.now()
+        };
+
+        // 監控用戶互動
+        document.addEventListener('click', () => {
+            this.performanceMetrics.interactionCount++;
+            this.performanceMetrics.lastInteraction = Date.now();
+        });
+
+        // 監控錯誤
+        window.addEventListener('error', (event) => {
+            this.performanceMetrics.errorCount++;
+            console.error('應用程式錯誤:', event.error);
+        });
+
+        // 定期保存性能數據
+        setInterval(() => {
+            this.savePerformanceMetrics();
+        }, 60000); // 每分鐘保存一次
+    }
+
+    savePerformanceMetrics() {
+        localStorage.setItem('qiaomu-performance', JSON.stringify(this.performanceMetrics));
+    }
+
+    // 學習提醒系統
+    setupStudyReminders() {
+        if (!this.settings.studyReminders || !('Notification' in window)) {
+            return;
+        }
+
+        // 請求通知權限
+        if (Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+        // 設定每日學習提醒
+        const now = new Date();
+        const reminderTime = new Date();
+        reminderTime.setHours(19, 0, 0, 0); // 晚上7點提醒
+
+        if (now > reminderTime) {
+            reminderTime.setDate(reminderTime.getDate() + 1);
+        }
+
+        const timeUntilReminder = reminderTime.getTime() - now.getTime();
+
+        setTimeout(() => {
+            this.sendStudyReminder();
+            // 每24小時重複
+            setInterval(() => {
+                this.sendStudyReminder();
+            }, 24 * 60 * 60 * 1000);
+        }, timeUntilReminder);
+    }
+
+    sendStudyReminder() {
+        if (Notification.permission === 'granted') {
+            const today = new Date().toDateString();
+            if (this.learningData.lastStudyDate !== today) {
+                new Notification('喬木英語學習提醒', {
+                    body: '該是學習英語的時間了！保持你的學習連續記錄 🔥',
+                    icon: '/favicon.ico',
+                    badge: '/favicon.ico',
+                    tag: 'study-reminder',
+                    requireInteraction: true
+                });
             }
         }
-    };
+    }
+
+    // 數據導出與導入
+    exportLearningData() {
+        const exportData = {
+            user: this.currentUser,
+            learning: this.learningData,
+            settings: this.settings,
+            exportDate: new Date().toISOString(),
+            version: '1.0'
+        };
+
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(dataBlob);
+        link.download = `qiaomu-learning-data-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    importLearningData(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                
+                if (this.validateImportData(importedData)) {
+                    this.currentUser = { ...this.currentUser, ...importedData.user };
+                    this.learningData = { ...this.learningData, ...importedData.learning };
+                    this.settings = { ...this.settings, ...importedData.settings };
+                    
+                    this.saveUserData();
+                    this.saveLearningData();
+                    this.saveSettings();
+                    
+                    alert('學習數據導入成功！');
+                    location.reload();
+                } else {
+                    alert('無效的數據格式！');
+                }
+            } catch (error) {
+                alert('導入失敗，請檢查檔案格式！');
+                console.error('導入錯誤:', error);
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    validateImportData(data) {
+        return data && 
+               data.user && 
+               data.learning && 
+               data.settings && 
+               data.version;
+    }
+
+    // 離線支援
+    setupOfflineSupport() {
+        // 檢測網路狀態
+        window.addEventListener('online', () => {
+            this.showNetworkStatus('已連接到網路', 'success');
+            this.syncOfflineData();
+        });
+
+        window.addEventListener('offline', () => {
+            this.showNetworkStatus('已離線，數據將保存在本地', 'warning');
+        });
+
+        // 註冊 Service Worker（如果可用）
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(() => console.log('Service Worker 註冊成功'))
+                .catch(error => console.log('Service Worker 註冊失敗:', error));
+        }
+    }
+
+    showNetworkStatus(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `network-status ${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            background: ${type === 'success' ? '#48bb78' : '#ed8936'};
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 3000);
+    }
+
+    syncOfflineData() {
+        // 同步離線期間的數據到服務器
+        // 這裡可以實現與後端API的同步邏輯
+        console.log('同步離線數據...');
+    }
+
+    // 事件監聽器設置
+    initializeEventListeners() {
+        // 鍵盤快捷鍵
+        document.addEventListener('keydown', (event) => {
+            if (event.ctrlKey || event.metaKey) {
+                switch (event.key) {
+                    case 's':
+                        event.preventDefault();
+                        this.quickSave();
+                        break;
+                    case 'e':
+                        event.preventDefault();
+                        this.exportLearningData();
+                        break;
+                }
+            }
+        });
+
+        // 視窗關閉前保存
+        window.addEventListener('beforeunload', () => {
+            this.saveUserData();
+            this.saveLearningData();
+            this.saveSettings();
+            this.savePerformanceMetrics();
+        });
+
+        // 頁面可見性變化
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.pauseTimers();
+            } else {
+                this.resumeTimers();
+            }
+        });
+    }
+
+    quickSave() {
+        this.saveUserData();
+        this.saveLearningData();
+        this.saveSettings();
+        
+        // 顯示保存成功提示
+        const toast = document.createElement('div');
+        toast.textContent = '數據已保存 ✓';
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #48bb78;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            z-index: 10000;
+        `;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            document.body.removeChild(toast);
+        }, 2000);
+    }
+
+    pauseTimers() {
+        // 暫停所有計時器
+        this.timersPaused = true;
+    }
+
+    resumeTimers() {
+        // 恢復所有計時器
+        this.timersPaused = false;
+    }
+
+    // 主題管理
+    setTheme(theme) {
+        this.currentUser.preferences.theme = theme;
+        this.saveUserData();
+        this.applyTheme();
+    }
+
+    applyTheme() {
+        const theme = this.currentUser.preferences.theme;
+        
+        if (theme === 'dark') {
+            document.body.classList.add('dark-theme');
+        } else if (theme === 'light') {
+            document.body.classList.remove('dark-theme');
+        } else {
+            // 自動模式
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.body.classList.toggle('dark-theme', prefersDark);
+        }
+    }
+
+    // 輔助功能
+    setupAccessibility() {
+        // 鍵盤導航支援
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Tab') {
+                document.body.classList.add('keyboard-navigation');
+            }
+        });
+
+        document.addEventListener('mousedown', () => {
+            document.body.classList.remove('keyboard-navigation');
+        });
+
+        // 高對比度支援
+        if (window.matchMedia('(prefers-contrast: high)').matches) {
+            document.body.classList.add('high-contrast');
+        }
+
+        // 減少動畫偏好
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.body.classList.add('reduced-motion');
+        }
+    }
+
+    // 錯誤處理
+    handleError(error, context) {
+        console.error(`錯誤發生在 ${context}:`, error);
+        
+        this.performanceMetrics.errorCount++;
+        
+        // 顯示用戶友好的錯誤訊息
+        const errorMessage = this.getErrorMessage(error);
+        this.showErrorNotification(errorMessage);
+    }
+
+    getErrorMessage(error) {
+        if (error.name === 'QuotaExceededError') {
+            return '儲存空間不足，請清理瀏覽器數據';
+        }
+        if (error.name === 'NetworkError') {
+            return '網路連接問題，請檢查網路狀態';
+        }
+        return '發生未知錯誤，請重新整理頁面';
+    }
+
+    showErrorNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'error-notification';
+        notification.innerHTML = `
+            <div class="error-content">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
+        
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #f56565;
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            max-width: 300px;
+        `;
+
+        document.body.appendChild(notification);
+
+        // 5秒後自動移除
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+
+    // 初始化應用程式
+    initialize() {
+        try {
+            this.applyTheme();
+            this.setupAccessibility();
+            this.setupOfflineSupport();
+            this.setupStudyReminders();
+            console.log('喬木英語應用程式初始化完成');
+        } catch (error) {
+            this.handleError(error, '應用程式初始化');
+        }
+    }
 }
 
-// 當 DOM 載入完成後初始化應用程式
-document.addEventListener('DOMContentLoaded', function() {
-    // 添加全域鍵盤事件監聽器
-    document.addEventListener('keydown', function(event) {
-        // 獲取 Alpine.js 的應用程式實例
-        const app = Alpine.$data(document.querySelector('[x-data]'));
-        if (app && typeof app.handleKeydown === 'function') {
-            app.handleKeydown(event);
+// 全域工具函數
+window.QiaomuUtils = {
+    // 格式化時間
+    formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        
+        if (hours > 0) {
+            return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
-    });
-    
-    console.log('喬木英語學習系統已載入完成');
-});
+        return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    },
 
-// 在頁面卸載前自動儲存進度
-window.addEventListener('beforeunload', function() {
-    const app = Alpine.$data(document.querySelector('[x-data]'));
-    if (app && typeof app.saveProgress === 'function') {
-        app.saveProgress();
+    // 格式化日期
+    formatDate(date, locale = 'zh-TW') {
+        return new Date(date).toLocaleDateString(locale, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    },
+
+    // 節流函數
+    throttle(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    },
+
+    // 防抖函數
+    debounce(func, wait, immediate) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                timeout = null;
+                if (!immediate) func(...args);
+            };
+            const callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func(...args);
+        };
+    },
+
+    // 深拷貝
+    deepClone(obj) {
+        if (obj === null || typeof obj !== 'object') return obj;
+        if (obj instanceof Date) return new Date(obj);
+        if (obj instanceof Array) return obj.map(item => this.deepClone(item));
+        if (typeof obj === 'object') {
+            const clonedObj = {};
+            for (const key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    clonedObj[key] = this.deepClone(obj[key]);
+                }
+            }
+            return clonedObj;
+        }
+    },
+
+    // 本地化文字
+    t(key, params = {}) {
+        const translations = {
+            'zh-TW': {
+                'welcome': '歡迎使用喬木英語',
+                'loading': '載入中...',
+                'error': '發生錯誤',
+                'success': '成功',
+                'save': '保存',
+                'cancel': '取消',
+                'confirm': '確認'
+            }
+        };
+
+        const lang = localStorage.getItem('preferred-language') || 'zh-TW';
+        let text = translations[lang]?.[key] || key;
+
+        // 替換參數
+        Object.keys(params).forEach(param => {
+            text = text.replace(`{${param}}`, params[param]);
+        });
+
+        return text;
     }
+};
+
+// 當頁面載入完成時初始化應用程式
+document.addEventListener('DOMContentLoaded', () => {
+    // 檢查登入狀態
+    if (!localStorage.getItem('username')) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // 初始化主應用程式
+    window.qiaomuApp = new QiaomuEnglishApp();
+    window.qiaomuApp.initialize();
+    
+    console.log('喬木英語雙向費曼學習平台已成功載入');
 });

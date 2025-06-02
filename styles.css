@@ -1,34 +1,79 @@
-/* 喬木英語學習系統 - 樣式檔案 */
+/* 喬木英語 - 雙向費曼學習平台樣式文件 */
 
-/* 基礎樣式設定 */
+/* 基礎樣式重置與設定 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    font-family: 'Noto Sans TC', sans-serif;
+    font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+    line-height: 1.6;
+    color: #1a202c;
 }
 
 .font-serif { 
-    font-family: 'Noto Serif TC', serif; 
+    font-family: 'Noto Serif TC', Georgia, serif; 
 }
 
+/* 過渡動畫 */
 .smooth-transition { 
-    transition: all 0.3s ease-in-out; 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+
+/* 動態背景效果 */
+.dynamic-bg {
+    background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+    background-size: 400% 400%;
+    animation: gradientShift 20s ease infinite;
+    min-height: 100vh;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    25% { background-position: 100% 50%; }
+    50% { background-position: 100% 100%; }
+    75% { background-position: 0% 100%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 玻璃擬態效果 */
+.glass-morphism {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 /* 模組切換動畫 */
 .module-fade-enter-active, 
 .module-fade-leave-active { 
-    transition: opacity 0.4s ease-in-out; 
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1); 
 }
 
-.module-fade-enter-from, 
+.module-fade-enter-from { 
+    opacity: 0;
+    transform: translateY(40px) scale(0.9);
+    filter: blur(5px);
+}
+
 .module-fade-leave-to { 
-    opacity: 0; 
+    opacity: 0;
+    transform: translateY(-40px) scale(0.9);
+    filter: blur(5px);
 }
 
-/* 翻卡 3D 翻轉效果 */
+/* 3D 翻轉卡片效果 */
 .flashcard-container {
-    perspective: 1000px;
-    height: 480px;
+    perspective: 1200px;
+    height: 400px;
+    position: relative;
 }
 
 .flashcard {
@@ -36,12 +81,20 @@ body {
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
-    transition: transform 0.7s ease-in-out;
+    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
+}
+
+.flashcard:hover {
+    transform: scale(1.02);
 }
 
 .flashcard.is-flipped { 
     transform: rotateY(180deg); 
+}
+
+.flashcard.is-flipped:hover {
+    transform: rotateY(180deg) scale(1.02);
 }
 
 .flashcard-face {
@@ -54,629 +107,488 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.flashcard-front { 
-    background-color: white; 
-}
-
-.flashcard-back { 
-    background-color: #f0f9ff;
-    transform: rotateY(180deg); 
-}
-
-/* 進度條 */
-.progress-bar-container {
-    height: 4px;
-    background-color: #e5e7eb;
-    border-radius: 2px;
-    overflow: hidden;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    z-index: 40;
-}
-
-.progress-bar {
-    height: 100%;
-    background-color: #1f2937;
-    transition: width 0.3s ease-in-out;
-}
-
-/* 閱讀文字高亮效果 */
-.highlighted-word {
-    background-color: #fef9c3;
-    cursor: pointer;
-    padding: 0 2px;
-    border-radius: 2px;
-    transition: background-color 0.2s ease;
-}
-
-.highlighted-word:hover { 
-    background-color: #fde047; 
-}
-
-/* 測驗回饋樣式 */
-.option-button.correct { 
-    background-color: #dcfce7;
-    border-color: #22c55e;
-    color: #166534; 
-}
-
-.option-button.incorrect { 
-    background-color: #fee2e2;
-    border-color: #ef4444;
-    color: #991b1b; 
-}
-
-.option-button:disabled { 
-    opacity: 0.7; 
-    cursor: not-allowed; 
-}
-
-/* 海報模態框 */
-.poster-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-    cursor: pointer;
-}
-
-.poster-content {
-    width: 90%;
-    max-width: 400px;
-    aspect-ratio: 9 / 16;
-    background-color: white;
+    padding: 2rem;
+    border-radius: 1.5rem;
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
     overflow: hidden;
     position: relative;
-    display: flex;
-    flex-direction: column;
-    padding: 1.25rem;
-    border-radius: 0.5rem;
 }
 
-/* 海報動畫效果 */
-@keyframes posterFadeIn {
-    from { 
-        opacity: 0; 
-        transform: scale(0.95); 
-    }
-    to { 
-        opacity: 1; 
-        transform: scale(1); 
-    }
-}
-
-@keyframes floatAnimation {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0); }
-}
-
-/* 海報基礎佈局 */
-.poster-header {
-    text-align: center;
-    margin-bottom: 1rem;
-}
-
-.poster-header h2 {
-    font-size: 1.75rem;
-    margin-bottom: 0.25rem;
-}
-
-.poster-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-}
-
-.stat-card {
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    text-align: center;
-}
-
-.stat-number {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 0.25rem;
-}
-
-.stat-label {
-    font-size: 0.75rem;
-}
-
-.poster-words {
-    margin-bottom: 1rem;
-}
-
-.poster-words h3 {
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
-}
-
-.word-card {
-    margin-bottom: 0.75rem;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-}
-
-.word-text {
-    font-size: 1rem;
-    font-weight: bold;
-    margin-bottom: 0.125rem;
-}
-
-.word-phonetic {
-    font-size: 0.75rem;
-    margin-bottom: 0.25rem;
-}
-
-.word-definition {
-    font-size: 0.75rem;
-    line-height: 1.4;
-}
-
-.poster-footer {
-    margin-top: auto;
-    text-align: center;
-    padding-bottom: 0.5rem;
-}
-
-.poster-quote {
-    font-size: 0.75rem;
-    margin-bottom: 0.75rem;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    max-height: 3.6em;
-}
-
-.poster-branding {
-    font-size: 0.75rem;
-    opacity: 0.6;
-    position: relative;
-    bottom: 0;
-    width: 100%;
-    padding: 0.25rem 0;
-}
-
-/* 大膽現代風格 */
-.poster-bold-modern {
-    background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
-    color: #fff;
-    padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.poster-bold-modern::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg, 
-        rgba(255, 0, 128, 0.1) 0%,
-        rgba(255, 255, 0, 0.1) 100%);
-    transform: rotate(-15deg);
-    pointer-events: none;
-}
-
-.poster-bold-modern .poster-header {
-    margin-bottom: 2rem;
-}
-
-.poster-bold-modern .poster-header h2 {
-    font-size: 3.75rem;
-    font-weight: 900;
-    line-height: 1;
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(90deg, #ff0080, #ff8c00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    transform: skew(-5deg);
-}
-
-.poster-bold-modern .stat-card {
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    transform: skew(-5deg);
-}
-
-.poster-bold-modern .stat-number {
-    font-size: 2.5rem;
-    font-weight: 900;
-    color: #ff0080;
-}
-
-.poster-bold-modern .word-card {
-    background: rgba(0, 0, 0, 0.5);
-    border-left: 4px solid #ff0080;
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
-    transform: translateX(-0.5rem);
-    position: relative;
-}
-
-.poster-bold-modern .word-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, 
-        rgba(255, 0, 128, 0.1),
-        transparent);
-    pointer-events: none;
-}
-
-.poster-bold-modern .word-text {
-    font-size: 0.875rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: #fff;
-    margin-bottom: 0.125rem;
-}
-
-.poster-bold-modern .word-phonetic {
-    font-size: 0.625rem;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 0.125rem;
-}
-
-.poster-bold-modern .word-definition {
-    font-size: 0.625rem;
-    line-height: 1.2;
-    color: rgba(255, 255, 255, 0.9);
-}
-
-/* 賽博龐克風格 */
-.poster-cyberpunk {
-    background: #000020;
-    color: #0ff;
-    padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.poster-cyberpunk::before {
+.flashcard-face::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: 
-        linear-gradient(90deg, 
-            rgba(0, 255, 255, 0.1) 1px, 
-            transparent 1px
-        ),
-        linear-gradient(
-            rgba(0, 255, 255, 0.1) 1px,
-            transparent 1px
-        );
-    background-size: 20px 20px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
     pointer-events: none;
 }
 
-.poster-cyberpunk .poster-header {
+.flashcard-front { 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.flashcard-back { 
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    transform: rotateY(180deg); 
+}
+
+/* 費曼學習卡片 */
+.feynman-card {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        0 1px 0 rgba(255, 255, 255, 0.3) inset;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.feynman-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: rotate(45deg);
+    transition: all 0.6s;
+    opacity: 0;
+}
+
+.feynman-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+        0 30px 60px rgba(0, 0, 0, 0.15),
+        0 1px 0 rgba(255, 255, 255, 0.3) inset;
+}
+
+.feynman-card:hover::before {
+    opacity: 1;
+    transform: rotate(45deg) translate(50%, 50%);
+}
+
+/* 強迫學習進度條 */
+.force-progress {
+    height: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.force-progress::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* 測驗選項按鈕 */
+.option-button {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform: translateY(0);
+    position: relative;
+    overflow: hidden;
+}
+
+.option-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.option-button:hover::before {
+    left: 100%;
+}
+
+.option-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.option-button.correct { 
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    color: white;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(72, 187, 120, 0.3);
+}
+
+.option-button.incorrect { 
+    background: linear-gradient(135deg, #f56565, #e53e3e);
+    color: white;
+    transform: translateY(-3px) scale(0.98);
+    box-shadow: 0 15px 30px rgba(245, 101, 101, 0.3);
+}
+
+/* 學習統計圓環 */
+.stat-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: conic-gradient(from 0deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #ff6b6b);
+    animation: rotate 15s linear infinite;
+    position: relative;
+}
+
+.stat-circle::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #ff6b6b);
+    filter: blur(8px);
+    z-index: -1;
+    animation: rotate 15s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.stat-inner {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     position: relative;
     z-index: 1;
 }
 
-.poster-cyberpunk .poster-header h2 {
-    font-family: 'Courier New', monospace;
-    font-size: 2.5rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: #0ff;
-    text-shadow: 
-        2px 2px 0px #f0f,
-        -2px -2px 0px #0ff;
-    margin-bottom: 1rem;
+/* 懸浮動畫 */
+.floating {
+    animation: floating 4s ease-in-out infinite;
 }
 
-.poster-cyberpunk .stat-card {
-    background: rgba(0, 255, 255, 0.05);
-    border: 1px solid #0ff;
-    box-shadow: 
-        0 0 10px rgba(0, 255, 255, 0.3),
-        inset 0 0 20px rgba(0, 255, 255, 0.2);
-    position: relative;
+@keyframes floating {
+    0%, 100% { transform: translateY(0px); }
+    25% { transform: translateY(-8px); }
+    50% { transform: translateY(0px); }
+    75% { transform: translateY(-4px); }
 }
 
-.poster-cyberpunk .stat-card::before {
-    content: '';
-    position: absolute;
-    top: -1px;
-    left: -1px;
-    right: -1px;
-    bottom: -1px;
-    background: linear-gradient(45deg, 
-        transparent 0%,
-        rgba(0, 255, 255, 0.2) 50%,
-        transparent 100%);
-    z-index: -1;
+/* 脈衝效果 */
+.pulse-ring {
+    animation: pulse-ring 2.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
 }
 
-.poster-cyberpunk .word-card {
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid #0ff;
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
-    margin-bottom: 1rem;
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.8);
+        opacity: 1;
+    }
+    80% {
+        transform: scale(1.2);
+        opacity: 0.3;
+    }
+    100% {
+        transform: scale(1.4);
+        opacity: 0;
+    }
+}
+
+/* 用戶指示器 */
+.user-indicator {
     position: relative;
     overflow: hidden;
-}
-
-.poster-cyberpunk .word-text {
-    font-family: 'Courier New', monospace;
-    color: #fff;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    position: relative;
-}
-
-.poster-cyberpunk .word-phonetic {
-    color: #0ff;
-    font-style: italic;
-}
-
-.poster-cyberpunk .word-definition {
-    color: #0fc;
-    font-size: 0.875rem;
-}
-
-/* 優雅復古風格 */
-.poster-elegant-vintage {
-    background: #f8f3e3;
-    color: #2c1810;
-    padding: 1.5rem;
-    position: relative;
-    border: 8px double #8b4513;
-}
-
-.poster-elegant-vintage::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-        radial-gradient(circle at center, rgba(139, 69, 19, 0.05) 1px, transparent 1px),
-        radial-gradient(circle at center, rgba(139, 69, 19, 0.05) 1px, transparent 1px);
-    background-size: 20px 20px;
-    background-position: 0 0, 10px 10px;
-    pointer-events: none;
-    opacity: 0.5;
-}
-
-.poster-elegant-vintage .poster-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #8b4513;
-    position: relative;
-}
-
-.poster-elegant-vintage .poster-header::before,
-.poster-elegant-vintage .poster-header::after {
-    content: '•';
-    position: absolute;
-    bottom: -0.5rem;
-    font-size: 1rem;
-    color: #8b4513;
-    background: #f8f3e3;
-    padding: 0 0.5rem;
-}
-
-.poster-elegant-vintage .poster-header::before {
-    left: 45%;
-}
-
-.poster-elegant-vintage .poster-header::after {
-    right: 45%;
-}
-
-.poster-elegant-vintage .poster-header h2 {
-    font-family: 'Noto Serif TC', serif;
-    font-size: 2rem;
-    color: #8b4513;
-    letter-spacing: 0.1em;
-    text-shadow: 1px 1px 0 #f8f3e3;
-}
-
-.poster-elegant-vintage .stat-card {
-    background: #fff;
-    border: 1px solid #8b4513;
-    box-shadow: 3px 3px 0 #8b4513;
-    position: relative;
-}
-
-.poster-elegant-vintage .word-card {
-    background: #fff;
-    border: 1px solid #8b4513;
-    box-shadow: 2px 2px 0 #8b4513;
+    border-radius: 1rem;
     padding: 0.5rem;
-    margin-bottom: 0.5rem;
-    position: relative;
+    transition: all 0.3s ease;
 }
 
-.poster-elegant-vintage .word-text {
-    font-family: 'Noto Serif TC', serif;
-    color: #2c1810;
-    font-size: 0.875rem;
-    font-weight: 600;
-    margin-bottom: 0.125rem;
-}
-
-.poster-elegant-vintage .word-phonetic {
-    font-style: italic;
-    color: #8b4513;
-    font-size: 0.625rem;
-    margin-bottom: 0.125rem;
-}
-
-.poster-elegant-vintage .word-definition {
-    font-family: 'Noto Serif TC', serif;
-    color: #2c1810;
-    font-size: 0.625rem;
-    line-height: 1.2;
-}
-
-/* 新未來主義風格 */
-.poster-neo-futurism {
-    background: linear-gradient(135deg, #f5f5f7 0%, #ffffff 100%);
-    color: #1d1d1f;
-    padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.poster-neo-futurism::before {
+.user-indicator::before {
     content: '';
     position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        radial-gradient(
-            circle at 50% -20%,
-            rgba(0, 122, 255, 0.1),
-            transparent 70%
-        );
-    pointer-events: none;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s;
 }
 
-.poster-neo-futurism .poster-header h2 {
-    font-weight: 300;
-    font-size: 2rem;
-    letter-spacing: -0.03em;
-    background: linear-gradient(90deg, #007aff, #5856d6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0.75rem;
-    white-space: nowrap;
-    overflow: visible;
+.user-indicator:hover::before {
+    left: 100%;
 }
 
-.poster-neo-futurism .stat-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 
-        0 4px 6px rgba(0, 0, 0, 0.05),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+/* 載入動畫 */
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
 }
 
-.poster-neo-futurism .word-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 
-        0 4px 6px rgba(0, 0, 0, 0.05),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
-    padding: 1rem;
-    margin-bottom: 1rem;
-    position: relative;
-    overflow: hidden;
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
-.poster-neo-futurism .word-card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        45deg,
-        transparent,
-        rgba(0, 122, 255, 0.1),
-        transparent
-    );
-    transform: rotate(45deg);
-    pointer-events: none;
+/* 成功動畫 */
+.success-checkmark {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 2;
+    stroke: #4bb543;
+    stroke-miterlimit: 10;
+    box-shadow: inset 0px 0px 0px #4bb543;
+    animation: fill 0.4s ease-in-out 0.4s forwards, scale 0.3s ease-in-out 0.9s both;
 }
 
-.poster-neo-futurism .word-text {
-    background: linear-gradient(90deg, #007aff, #5856d6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 500;
-    font-size: 1.25rem;
+.success-checkmark__circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: #4bb543;
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
 }
 
-.poster-neo-futurism .word-phonetic {
-    color: #86868b;
+.success-checkmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
 }
 
-.poster-neo-futurism .word-definition {
-    color: #1d1d1f;
-    line-height: 1.6;
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
 }
 
-/* 閱讀區域樣式優化 */
-.prose {
-    max-width: none;
-    font-size: 1.125rem;
-    line-height: 2;
-    color: #1f2937;
+@keyframes scale {
+    0%, 100% {
+        transform: none;
+    }
+    50% {
+        transform: scale3d(1.1, 1.1, 1);
+    }
 }
 
-.bilingual-pair .english {
-    color: #1f2937;
-    font-size: 1.125rem;
-    line-height: 2;
-    margin-bottom: 0.5rem;
-}
-
-.bilingual-pair .chinese {
-    color: #374151;
-    font-size: 1.125rem;
-    line-height: 2;
-    padding-left: 1rem;
-    border-left: 2px solid #e5e7eb;
+@keyframes fill {
+    100% {
+        box-shadow: inset 0px 0px 0px 30px #4bb543;
+    }
 }
 
 /* 響應式設計 */
+@media (max-width: 1024px) {
+    .flashcard-container {
+        height: 380px;
+    }
+    
+    .feynman-card {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .flashcard-container {
+        height: 350px;
+    }
+    
+    .flashcard-face {
+        padding: 1.5rem;
+    }
+    
+    .feynman-card {
+        padding: 1rem;
+    }
+    
+    .stat-circle {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .stat-inner {
+        width: 75px;
+        height: 75px;
+    }
+    
+    .glass-morphism {
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+    }
+}
+
 @media (max-width: 640px) {
     .flashcard-container {
-        height: 400px;
+        height: 320px;
     }
     
-    .poster-content {
-        width: 95%;
-        max-width: 350px;
+    .flashcard-face {
+        padding: 1rem;
     }
     
-    .poster-bold-modern .poster-header h2 {
-        font-size: 2.5rem;
+    .stat-circle {
+        width: 80px;
+        height: 80px;
     }
     
-    .poster-cyberpunk .poster-header h2 {
-        font-size: 1.8rem;
+    .stat-inner {
+        width: 60px;
+        height: 60px;
     }
+    
+    .force-progress {
+        height: 8px;
+    }
+}
+
+/* 深色模式支援 */
+@media (prefers-color-scheme: dark) {
+    .glass-morphism {
+        background: rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .feynman-card {
+        background: linear-gradient(135deg, #2a4365 0%, #553c9a 100%);
+        color: white;
+    }
+    
+    .stat-inner {
+        background: #2d3748;
+        color: white;
+    }
+}
+
+/* 高對比度支援 */
+@media (prefers-contrast: high) {
+    .glass-morphism {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid #000;
+    }
+    
+    .option-button {
+        border: 2px solid #000;
+    }
+    
+    .option-button.correct {
+        border-color: #22543d;
+    }
+    
+    .option-button.incorrect {
+        border-color: #742a2a;
+    }
+}
+
+/* 減少動畫偏好 */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .dynamic-bg {
+        animation: none;
+        background: linear-gradient(-45deg, #667eea, #764ba2);
+    }
+    
+    .floating {
+        animation: none;
+    }
+    
+    .pulse-ring {
+        animation: none;
+    }
+    
+    .stat-circle {
+        animation: none;
+    }
+}
+
+/* 可訪問性改善 */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* 焦點樣式 */
+button:focus,
+input:focus,
+textarea:focus {
+    outline: 2px solid #4299e1;
+    outline-offset: 2px;
+}
+
+/* 選擇文字樣式 */
+::selection {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: inherit;
+}
+
+::-moz-selection {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: inherit;
+}
+
+/* 滾動條樣式 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
 }
