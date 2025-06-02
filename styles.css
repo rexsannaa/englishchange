@@ -1,0 +1,682 @@
+/* 喬木英語學習系統 - 樣式檔案 */
+
+/* 基礎樣式設定 */
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.font-serif { 
+    font-family: 'Noto Serif TC', serif; 
+}
+
+.smooth-transition { 
+    transition: all 0.3s ease-in-out; 
+}
+
+/* 模組切換動畫 */
+.module-fade-enter-active, 
+.module-fade-leave-active { 
+    transition: opacity 0.4s ease-in-out; 
+}
+
+.module-fade-enter-from, 
+.module-fade-leave-to { 
+    opacity: 0; 
+}
+
+/* 翻卡 3D 翻轉效果 */
+.flashcard-container {
+    perspective: 1000px;
+    height: 480px;
+}
+
+.flashcard {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.7s ease-in-out;
+    cursor: pointer;
+}
+
+.flashcard.is-flipped { 
+    transform: rotateY(180deg); 
+}
+
+.flashcard-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.flashcard-front { 
+    background-color: white; 
+}
+
+.flashcard-back { 
+    background-color: #f0f9ff;
+    transform: rotateY(180deg); 
+}
+
+/* 進度條 */
+.progress-bar-container {
+    height: 4px;
+    background-color: #e5e7eb;
+    border-radius: 2px;
+    overflow: hidden;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 40;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #1f2937;
+    transition: width 0.3s ease-in-out;
+}
+
+/* 閱讀文字高亮效果 */
+.highlighted-word {
+    background-color: #fef9c3;
+    cursor: pointer;
+    padding: 0 2px;
+    border-radius: 2px;
+    transition: background-color 0.2s ease;
+}
+
+.highlighted-word:hover { 
+    background-color: #fde047; 
+}
+
+/* 測驗回饋樣式 */
+.option-button.correct { 
+    background-color: #dcfce7;
+    border-color: #22c55e;
+    color: #166534; 
+}
+
+.option-button.incorrect { 
+    background-color: #fee2e2;
+    border-color: #ef4444;
+    color: #991b1b; 
+}
+
+.option-button:disabled { 
+    opacity: 0.7; 
+    cursor: not-allowed; 
+}
+
+/* 海報模態框 */
+.poster-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    cursor: pointer;
+}
+
+.poster-content {
+    width: 90%;
+    max-width: 400px;
+    aspect-ratio: 9 / 16;
+    background-color: white;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+}
+
+/* 海報動畫效果 */
+@keyframes posterFadeIn {
+    from { 
+        opacity: 0; 
+        transform: scale(0.95); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+@keyframes floatAnimation {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+/* 海報基礎佈局 */
+.poster-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.poster-header h2 {
+    font-size: 1.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.poster-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.stat-card {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+}
+
+.poster-words {
+    margin-bottom: 1rem;
+}
+
+.poster-words h3 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.word-card {
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+}
+
+.word-text {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 0.125rem;
+}
+
+.word-phonetic {
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.word-definition {
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+
+.poster-footer {
+    margin-top: auto;
+    text-align: center;
+    padding-bottom: 0.5rem;
+}
+
+.poster-quote {
+    font-size: 0.75rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-height: 3.6em;
+}
+
+.poster-branding {
+    font-size: 0.75rem;
+    opacity: 0.6;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    padding: 0.25rem 0;
+}
+
+/* 大膽現代風格 */
+.poster-bold-modern {
+    background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+    color: #fff;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.poster-bold-modern::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, 
+        rgba(255, 0, 128, 0.1) 0%,
+        rgba(255, 255, 0, 0.1) 100%);
+    transform: rotate(-15deg);
+    pointer-events: none;
+}
+
+.poster-bold-modern .poster-header {
+    margin-bottom: 2rem;
+}
+
+.poster-bold-modern .poster-header h2 {
+    font-size: 3.75rem;
+    font-weight: 900;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, #ff0080, #ff8c00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transform: skew(-5deg);
+}
+
+.poster-bold-modern .stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    transform: skew(-5deg);
+}
+
+.poster-bold-modern .stat-number {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #ff0080;
+}
+
+.poster-bold-modern .word-card {
+    background: rgba(0, 0, 0, 0.5);
+    border-left: 4px solid #ff0080;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    transform: translateX(-0.5rem);
+    position: relative;
+}
+
+.poster-bold-modern .word-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        rgba(255, 0, 128, 0.1),
+        transparent);
+    pointer-events: none;
+}
+
+.poster-bold-modern .word-text {
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #fff;
+    margin-bottom: 0.125rem;
+}
+
+.poster-bold-modern .word-phonetic {
+    font-size: 0.625rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0.125rem;
+}
+
+.poster-bold-modern .word-definition {
+    font-size: 0.625rem;
+    line-height: 1.2;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* 賽博龐克風格 */
+.poster-cyberpunk {
+    background: #000020;
+    color: #0ff;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.poster-cyberpunk::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        linear-gradient(90deg, 
+            rgba(0, 255, 255, 0.1) 1px, 
+            transparent 1px
+        ),
+        linear-gradient(
+            rgba(0, 255, 255, 0.1) 1px,
+            transparent 1px
+        );
+    background-size: 20px 20px;
+    pointer-events: none;
+}
+
+.poster-cyberpunk .poster-header {
+    position: relative;
+    z-index: 1;
+}
+
+.poster-cyberpunk .poster-header h2 {
+    font-family: 'Courier New', monospace;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #0ff;
+    text-shadow: 
+        2px 2px 0px #f0f,
+        -2px -2px 0px #0ff;
+    margin-bottom: 1rem;
+}
+
+.poster-cyberpunk .stat-card {
+    background: rgba(0, 255, 255, 0.05);
+    border: 1px solid #0ff;
+    box-shadow: 
+        0 0 10px rgba(0, 255, 255, 0.3),
+        inset 0 0 20px rgba(0, 255, 255, 0.2);
+    position: relative;
+}
+
+.poster-cyberpunk .stat-card::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    background: linear-gradient(45deg, 
+        transparent 0%,
+        rgba(0, 255, 255, 0.2) 50%,
+        transparent 100%);
+    z-index: -1;
+}
+
+.poster-cyberpunk .word-card {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #0ff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+    margin-bottom: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.poster-cyberpunk .word-text {
+    font-family: 'Courier New', monospace;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    position: relative;
+}
+
+.poster-cyberpunk .word-phonetic {
+    color: #0ff;
+    font-style: italic;
+}
+
+.poster-cyberpunk .word-definition {
+    color: #0fc;
+    font-size: 0.875rem;
+}
+
+/* 優雅復古風格 */
+.poster-elegant-vintage {
+    background: #f8f3e3;
+    color: #2c1810;
+    padding: 1.5rem;
+    position: relative;
+    border: 8px double #8b4513;
+}
+
+.poster-elegant-vintage::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at center, rgba(139, 69, 19, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at center, rgba(139, 69, 19, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.poster-elegant-vintage .poster-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #8b4513;
+    position: relative;
+}
+
+.poster-elegant-vintage .poster-header::before,
+.poster-elegant-vintage .poster-header::after {
+    content: '•';
+    position: absolute;
+    bottom: -0.5rem;
+    font-size: 1rem;
+    color: #8b4513;
+    background: #f8f3e3;
+    padding: 0 0.5rem;
+}
+
+.poster-elegant-vintage .poster-header::before {
+    left: 45%;
+}
+
+.poster-elegant-vintage .poster-header::after {
+    right: 45%;
+}
+
+.poster-elegant-vintage .poster-header h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 2rem;
+    color: #8b4513;
+    letter-spacing: 0.1em;
+    text-shadow: 1px 1px 0 #f8f3e3;
+}
+
+.poster-elegant-vintage .stat-card {
+    background: #fff;
+    border: 1px solid #8b4513;
+    box-shadow: 3px 3px 0 #8b4513;
+    position: relative;
+}
+
+.poster-elegant-vintage .word-card {
+    background: #fff;
+    border: 1px solid #8b4513;
+    box-shadow: 2px 2px 0 #8b4513;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.poster-elegant-vintage .word-text {
+    font-family: 'Noto Serif TC', serif;
+    color: #2c1810;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.125rem;
+}
+
+.poster-elegant-vintage .word-phonetic {
+    font-style: italic;
+    color: #8b4513;
+    font-size: 0.625rem;
+    margin-bottom: 0.125rem;
+}
+
+.poster-elegant-vintage .word-definition {
+    font-family: 'Noto Serif TC', serif;
+    color: #2c1810;
+    font-size: 0.625rem;
+    line-height: 1.2;
+}
+
+/* 新未來主義風格 */
+.poster-neo-futurism {
+    background: linear-gradient(135deg, #f5f5f7 0%, #ffffff 100%);
+    color: #1d1d1f;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.poster-neo-futurism::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(
+            circle at 50% -20%,
+            rgba(0, 122, 255, 0.1),
+            transparent 70%
+        );
+    pointer-events: none;
+}
+
+.poster-neo-futurism .poster-header h2 {
+    font-weight: 300;
+    font-size: 2rem;
+    letter-spacing: -0.03em;
+    background: linear-gradient(90deg, #007aff, #5856d6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.75rem;
+    white-space: nowrap;
+    overflow: visible;
+}
+
+.poster-neo-futurism .stat-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.05),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.poster-neo-futurism .word-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.05),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.poster-neo-futurism .word-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(0, 122, 255, 0.1),
+        transparent
+    );
+    transform: rotate(45deg);
+    pointer-events: none;
+}
+
+.poster-neo-futurism .word-text {
+    background: linear-gradient(90deg, #007aff, #5856d6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 500;
+    font-size: 1.25rem;
+}
+
+.poster-neo-futurism .word-phonetic {
+    color: #86868b;
+}
+
+.poster-neo-futurism .word-definition {
+    color: #1d1d1f;
+    line-height: 1.6;
+}
+
+/* 閱讀區域樣式優化 */
+.prose {
+    max-width: none;
+    font-size: 1.125rem;
+    line-height: 2;
+    color: #1f2937;
+}
+
+.bilingual-pair .english {
+    color: #1f2937;
+    font-size: 1.125rem;
+    line-height: 2;
+    margin-bottom: 0.5rem;
+}
+
+.bilingual-pair .chinese {
+    color: #374151;
+    font-size: 1.125rem;
+    line-height: 2;
+    padding-left: 1rem;
+    border-left: 2px solid #e5e7eb;
+}
+
+/* 響應式設計 */
+@media (max-width: 640px) {
+    .flashcard-container {
+        height: 400px;
+    }
+    
+    .poster-content {
+        width: 95%;
+        max-width: 350px;
+    }
+    
+    .poster-bold-modern .poster-header h2 {
+        font-size: 2.5rem;
+    }
+    
+    .poster-cyberpunk .poster-header h2 {
+        font-size: 1.8rem;
+    }
+}

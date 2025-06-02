@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>喬木英語 - 智能學習平台</title>
+    
+    <!-- External Libraries -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Local Styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.9.0/cdn.min.js" defer></script>
+</head>
+<body class="bg-gray-100" x-data="qiaomuApp()">
+    
+    <!-- Top Navigation -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <div @click="currentModule = 'words'; currentWordIndex = 0; wordCardFlipped = false;" 
+                 class="text-xl font-black text-gray-800 font-serif cursor-pointer hover:text-gray-900 transform hover:scale-105 transition-all duration-200">
+                喬木英語
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <div class="hidden sm:flex ml-auto space-x-4">
+                <button @click="currentModule = 'words'" 
+                        :class="{'text-gray-800 border-b-2 border-gray-800 font-semibold': currentModule === 'words', 'text-gray-500 hover:text-gray-700': currentModule !== 'words'}" 
+                        class="py-2 px-1 smooth-transition">
+                    單字學習
+                </button>
+                <button @click="currentModule = 'reading'" 
+                        :class="{'text-gray-800 border-b-2 border-gray-800 font-semibold': currentModule === 'reading', 'text-gray-500 hover:text-gray-700': currentModule !== 'reading'}" 
+                        class="py-2 px-1 smooth-transition">
+                    閱讀學習
+                </button>
+                <button @click="currentModule = 'quiz'" 
+                        :class="{'text-gray-800 border-b-2 border-gray-800 font-semibold': currentModule === 'quiz', 'text-gray-500 hover:text-gray-700': currentModule !== 'quiz'}" 
+                        class="py-2 px-1 smooth-transition">
+                    理解測驗
+                </button>
+                <button @click="currentModule = 'achievement'" 
+                        :class="{'text-gray-800 border-b-2 border-gray-800 font-semibold': currentModule === 'achievement', 'text-gray-500 hover:text-gray-700': currentModule !== 'achievement'}" 
+                        class="py-2 px-1 smooth-transition">
+                    學習成就
+                </button>
+            </div>
+            
+            <!-- Mobile Menu Button -->
+            <div class="sm:hidden">
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-gray-600 focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Mobile Menu -->
+        <div x-show="mobileMenuOpen" 
+             @click.away="mobileMenuOpen = false" 
+             class="sm:hidden absolute top-full left-0 right-0 bg-white shadow-lg py-2 z-40" 
+             x-transition>
+            <button @click="currentModule = 'words'; mobileMenuOpen = false" 
+                    class="block w-full text-left px-4 py-2 text-sm" 
+                    :class="{'text-gray-800 font-semibold': currentModule === 'words', 'text-gray-700': currentModule !== 'words'}">
+                單字學習
+            </button>
+            <button @click="currentModule = 'reading'; mobileMenuOpen = false" 
+                    class="block w-full text-left px-4 py-2 text-sm" 
+                    :class="{'text-gray-800 font-semibold': currentModule === 'reading', 'text-gray-700': currentModule !== 'reading'}">
+                閱讀學習
+            </button>
+            <button @click="currentModule = 'quiz'; mobileMenuOpen = false" 
+                    class="block w-full text-left px-4 py-2 text-sm" 
+                    :class="{'text-gray-800 font-semibold': currentModule === 'quiz', 'text-gray-700': currentModule !== 'quiz'}">
+                理解測驗
+            </button>
+            <button @click="currentModule = 'achievement'; mobileMenuOpen = false" 
+                    class="block w-full text-left px-4 py-2 text-sm" 
+                    :class="{'text-gray-800 font-semibold': currentModule === 'achievement', 'text-gray-700': currentModule !== 'achievement'}">
+                學習成就
+            </button>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 pb-16">
+
+        <!-- Word Learning Module -->
+        <div x-show="currentModule === 'words'" 
+             x-transition:enter="module-fade-enter-active" 
+             x-transition:enter-start="module-fade-enter-from" 
+             x-transition:enter-end="module-fade-enter-to" 
+             x-transition:leave="module-fade-leave-active" 
+             x-transition:leave-start="module-fade-leave-from" 
+             x-transition:leave-end="module-fade-leave-to"
+             class="swipe-area"
+             @touchstart="handleTouchStart"
+             @touchmove="handleTouchMove"
+             @touchend="handleTouchEnd('words')">
+            
+            <h2 class="text-2xl font-semibold mb-6 text-gray-800 text-center">單字學習</h2>
+            
+            <div class="max-w-md mx-auto">
+                <div class="flashcard-container h-64 sm:h-72 mb-6">
+                    <div class="flashcard" :class="{ 'is-flipped': wordCardFlipped }" @click="wordCardFlipped = !wordCardFlipped">
+                        <!-- Front Face -->
+                        <div class="flashcard-face flashcard-front">
+                            <div class="text-4xl sm:text-5xl font-bold text-gray-900 mb-2" x-text="currentWordData.word"></div>
+                            <div class="text-lg text-gray-600" x-text="currentWordData.phonetic"></div>
+                        </div>
+                        
+                        <!-- Back Face -->
+                        <div class="flashcard-face flashcard-back">
+                            <div class="w-full h-full flex flex-col">
+                                <!-- 單字釋義部分 -->
+                                <div class="mb-4 p-4 bg-blue-50 rounded-lg">
+                                    <h3 class="text-lg font-semibold text-blue-800 mb-2">釋義</h3>
+                                    <p class="text-gray-800" x-text="currentWordData.definition"></p>
+                                </div>
+                                
+                                <!-- 詞根解析部分 -->
+                                <template x-if="currentWordData.etymology">
+                                    <div class="mb-4 p-4 bg-purple-50 rounded-lg">
+                                        <h3 class="text-lg font-semibold text-purple-800 mb-2">詞根解析</h3>
+                                        <p class="text-gray-800" x-text="currentWordData.etymology"></p>
+                                    </div>
+                                </template>
+                                
+                                <!-- 例句部分 -->
+                                <div class="p-4 bg-green-50 rounded-lg">
+                                    <h3 class="text-lg font-semibold text-green-800 mb-2">例句</h3>
+                                    <p class="text-gray-800 italic" x-text="currentWordData.sentence"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex justify-between items-center">
+                    <button @click="prevWord()" 
+                            :disabled="currentWordIndex === 0" 
+                            class="flex items-center px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed smooth-transition transform active:scale-95">
+                        <i class="fas fa-chevron-left mr-2"></i> 上一個
+                    </button>
+
+                    <span class="text-sm text-gray-500" x-text="`${currentWordIndex + 1} / ${words.length}`"></span>
+
+                    <template x-if="currentWordIndex < words.length - 1">
+                        <button @click="nextWord()" 
+                                class="flex items-center px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed smooth-transition transform active:scale-95">
+                             下一個 <i class="fas fa-chevron-right ml-2"></i>
+                        </button>
+                    </template>
+                    
+                    <template x-if="currentWordIndex === words.length - 1">
+                        <button @click="currentModule = 'reading'" 
+                                class="flex items-center px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 smooth-transition transform active:scale-95">
+                            開始閱讀 <i class="fas fa-book-reader ml-2"></i>
+                        </button>
+                    </template>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-bar-container">
+                 <div class="progress-bar" :style="`width: ${((currentWordIndex + 1) / words.length) * 100}%`"></div>
+            </div>
+        </div>
+
+        <!-- Reading Comprehension Module -->
+        <div x-show="currentModule === 'reading'" 
+             x-transition:enter="module-fade-enter-active" 
+             x-transition:enter-start="module-fade-enter-from" 
+             x-transition:enter-end="module-fade-enter-to" 
+             x-transition:leave="module-fade-leave-active" 
+             x-transition:leave-start="module-fade-leave-from" 
+             x-transition:leave-end="module-fade-leave-to">
+            
+            <h2 class="text-2xl font-semibold mb-4 text-gray-800 text-center">閱讀學習</h2>
+
+            <!-- Reading Mode Selector -->
+            <div class="bg-white p-4 rounded-lg shadow-md mb-4">
+                <div class="flex justify-center space-x-4">
+                    <button @click="readingMode = 'english'" 
+                            :class="{'bg-gray-800 text-white': readingMode === 'english', 'bg-gray-100 text-gray-800': readingMode !== 'english'}"
+                            class="px-4 py-2 rounded-md transition-all duration-200 hover:bg-gray-900 hover:text-white">
+                        <i class="fas fa-language mr-2"></i>英文
+                    </button>
+                    <button @click="readingMode = 'chinese'"
+                            :class="{'bg-gray-800 text-white': readingMode === 'chinese', 'bg-gray-100 text-gray-800': readingMode !== 'chinese'}"
+                            class="px-4 py-2 rounded-md transition-all duration-200 hover:bg-gray-900 hover:text-white">
+                        <i class="fas fa-font mr-2"></i>中文
+                    </button>
+                    <button @click="readingMode = 'bilingual'"
+                            :class="{'bg-gray-800 text-white': readingMode === 'bilingual', 'bg-gray-100 text-gray-800': readingMode !== 'bilingual'}"
+                            class="px-4 py-2 rounded-md transition-all duration-200 hover:bg-gray-900 hover:text-white">
+                        <i class="fas fa-exchange-alt mr-2"></i>雙語
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reading Area -->
+            <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-8">
+                <div class="swipe-area"
+                     @touchstart="handleTouchStart"
+                     @touchmove="handleTouchMove"
+                     @touchend="handleTouchEnd('reading')">
+                    
+                    <!-- Single Language Mode -->
+                    <template x-if="readingMode !== 'bilingual'">
+                        <div class="prose max-w-none text-base sm:text-lg leading-relaxed text-gray-800"
+                             x-html="readingMode === 'english' ? formattedEnglishText : formattedChineseText"
+                             @click="handleWordClick($event)">
+                        </div>
+                    </template>
+
+                    <!-- Bilingual Mode -->
+                    <template x-if="readingMode === 'bilingual'">
+                        <div class="bilingual-text">
+                            <template x-for="(paragraph, index) in getBilingualParagraphs()" :key="index">
+                                <div class="bilingual-pair">
+                                    <div class="english" x-html="paragraph.english"></div>
+                                    <div class="chinese" x-html="paragraph.chinese"></div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- 跳轉按鈕 -->
+            <div class="mt-8 text-center">
+                <button @click="currentModule = 'quiz'" 
+                        class="px-6 py-3 bg-gray-800 text-white rounded-md hover:bg-gray-900 smooth-transition transform active:scale-95 shadow-lg">
+                    <i class="fas fa-tasks mr-2"></i>已完成去測驗
+                </button>
+            </div>
+        </div>
+
+        <!-- Quiz Module -->
+        <div x-show="currentModule === 'quiz'" 
+             x-transition:enter="module-fade-enter-active" 
+             x-transition:enter-start="module-fade-enter-from" 
+             x-transition:enter-end="module-fade-enter-to" 
+             x-transition:leave="module-fade-leave-active" 
+             x-transition:leave-start="module-fade-leave-from" 
+             x-transition:leave-end="module-fade-leave-to">
+            
+            <h2 class="text-2xl font-semibold mb-6 text-gray-800 text-center">理解測驗</h2>
+            
+            <!-- Quiz Content -->
+            <div x-show="!quizCompleted">
+                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                    <div class="mb-4">
+                        <p class="font-medium text-gray-800 mb-1" x-text="`問題 ${currentQuestionIndex + 1} / ${questions.length}:`"></p>
+                        <p class="text-lg text-gray-900" x-text="currentQuestionData.question"></p>
+                    </div>
+                    
+                    <div class="space-y-3 mb-4">
+                        <template x-for="(option, index) in currentQuestionData.options" :key="index">
+                            <button @click="selectAnswer(index)"
+                                    :disabled="userAnswers[currentQuestionIndex] !== null"
+                                    class="w-full text-left p-3 border rounded-md hover:bg-gray-50 smooth-transition option-button"
+                                    :class="{
+                                        'correct': userAnswers[currentQuestionIndex] !== null && index === currentQuestionData.correctAnswer && userAnswers[currentQuestionIndex] === index,
+                                        'incorrect': userAnswers[currentQuestionIndex] !== null && index !== currentQuestionData.correctAnswer && userAnswers[currentQuestionIndex] === index,
+                                        'border-blue-500 bg-blue-50': userAnswers[currentQuestionIndex] !== null && index === currentQuestionData.correctAnswer,
+                                        'border-gray-300': userAnswers[currentQuestionIndex] === null || (userAnswers[currentQuestionIndex] !== null && index !== userAnswers[currentQuestionIndex] && index !== currentQuestionData.correctAnswer)
+                                    }">
+                                <span class="font-medium mr-2" x-text="String.fromCharCode(65 + index) + '.'"></span>
+                                <span x-text="option"></span>
+                                <template x-if="userAnswers[currentQuestionIndex] !== null && index === currentQuestionData.correctAnswer">
+                                    <i class="fas fa-check text-green-600 float-right"></i>
+                                </template>
+                                <template x-if="userAnswers[currentQuestionIndex] !== null && index === userAnswers[currentQuestionIndex] && index !== currentQuestionData.correctAnswer">
+                                    <i class="fas fa-times text-red-600 float-right"></i>
+                                </template>
+                            </button>
+                        </template>
+                    </div>
+                    
+                    <div x-show="userAnswers[currentQuestionIndex] !== null" 
+                         class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-md" 
+                         x-transition>
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-500 mt-1 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold text-blue-800 mb-1">解析</h4>
+                                <p class="text-blue-900" x-text="currentQuestionData.explanation"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Navigation -->
+                    <div class="mt-6 text-right">
+                        <template x-if="currentQuestionIndex < questions.length - 1">
+                            <button @click="nextQuestion()"
+                                    :disabled="userAnswers[currentQuestionIndex] === null"
+                                    class="px-5 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed smooth-transition transform active:scale-95">
+                                下一題 <i class="fas fa-chevron-right ml-1"></i>
+                            </button>
+                        </template>
+                        <template x-if="currentQuestionIndex === questions.length - 1">
+                            <button @click="finishQuiz()"
+                                    :disabled="userAnswers[currentQuestionIndex] === null"
+                                    class="px-5 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed smooth-transition transform active:scale-95">
+                                完成測驗 <i class="fas fa-check-circle ml-1"></i>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Results -->
+            <div x-show="quizCompleted" 
+                 class="text-center bg-white p-6 rounded-lg shadow-md" 
+                 x-transition>
+                <h3 class="text-2xl font-semibold mb-4 text-green-600">測驗完成!</h3>
+                <p class="text-xl mb-2 text-gray-800">你的得分: <strong x-text="quizScore" class="text-blue-600"></strong> / <span x-text="questions.length"></span></p>
+                <p class="text-gray-600 mb-6" x-text="getQuizFeedback()"></p>
+                <div class="flex justify-center space-x-4">
+                    <button @click="retakeQuiz()" 
+                            class="px-5 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 smooth-transition transform active:scale-95">
+                        <i class="fas fa-redo mr-1"></i> 重新測驗
+                    </button>
+                    <button @click="currentModule = 'achievement'" 
+                            class="px-5 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 smooth-transition transform active:scale-95">
+                        查看學習成就 <i class="fas fa-trophy ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Achievement Module -->
+        <div x-show="currentModule === 'achievement'" 
+             x-transition:enter="module-fade-enter-active" 
+             x-transition:enter-start="module-fade-enter-from" 
+             x-transition:enter-end="module-fade-enter-to" 
+             x-transition:leave="module-fade-leave-active" 
+             x-transition:leave-start="module-fade-leave-from" 
+             x-transition:leave-end="module-fade-leave-to">
+            
+            <h2 class="text-2xl font-semibold mb-8 text-gray-800 text-center">學習成就</h2>
+            
+            <div class="max-w-2xl mx-auto">
+                <!-- 成就卡片 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <!-- 頂部資訊區 -->
+                    <div class="bg-gradient-to-r from-gray-800 to-gray-900 text-white p-6">
+                        <div class="text-center">
+                            <p class="text-lg opacity-90">學習日期</p>
+                            <p class="text-2xl font-bold mt-1" x-text="currentDate"></p>
+                        </div>
+                    </div>
+                    
+                    <!-- 統計資料區 -->
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 gap-6">
+                            <!-- 單字學習統計 -->
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <i class="fas fa-book text-2xl text-gray-800 mb-2"></i>
+                                <p class="text-sm text-gray-600">學習單字</p>
+                                <p class="text-2xl font-bold text-gray-800 mt-1" x-text="words.length"></p>
+                            </div>
+                            
+                            <!-- 測驗成績統計 -->
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <i class="fas fa-star text-2xl text-gray-800 mb-2"></i>
+                                <p class="text-sm text-gray-600">測驗得分</p>
+                                <p class="text-2xl font-bold text-gray-800 mt-1">
+                                    <span x-text="quizScore"></span>
+                                    <span class="text-base font-normal text-gray-600">/ </span>
+                                    <span x-text="questions.length" class="text-base font-normal text-gray-600"></span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 分享海報區 -->
+                        <div class="mt-8">
+                            <p class="text-center text-gray-600 mb-4">選擇風格生成你的專屬學習海報</p>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                <button @click="showPoster('bold-modern')" 
+                                        class="py-2 px-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 smooth-transition transform hover:scale-105 active:scale-95 shadow-md">
+                                    <i class="fas fa-bold mb-1"></i>
+                                    <span class="block text-sm">大膽現代</span>
+                                </button>
+                                <button @click="showPoster('cyberpunk')" 
+                                        class="py-2 px-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 smooth-transition transform hover:scale-105 active:scale-95 shadow-md">
+                                    <i class="fas fa-robot mb-1"></i>
+                                    <span class="block text-sm">賽博龐克</span>
+                                </button>
+                                <button @click="showPoster('elegant-vintage')" 
+                                        class="py-2 px-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 smooth-transition transform hover:scale-105 active:scale-95 shadow-md">
+                                    <i class="fas fa-feather mb-1"></i>
+                                    <span class="block text-sm">優雅復古</span>
+                                </button>
+                                <button @click="showPoster('neo-futurism')" 
+                                        class="py-2 px-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 smooth-transition transform hover:scale-105 active:scale-95 shadow-md">
+                                    <i class="fas fa-cube mb-1"></i>
+                                    <span class="block text-sm">新未來主義</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Poster Modal -->
+            <div x-show="posterVisible" 
+                 class="poster-modal" 
+                 @click="posterVisible = false" 
+                 x-transition:enter="module-fade-enter-active" 
+                 x-transition:leave="module-fade-leave-active">
+                <div class="poster-content" :class="'poster-' + selectedPosterStyle" @click.stop>
+                   <!-- Poster content will be dynamically generated -->
+                   <div class="h-full flex flex-col" x-html="getPosterContent()"></div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Local JavaScript -->
+    <script src="app.js"></script>
+    
+</body>
+</html>
