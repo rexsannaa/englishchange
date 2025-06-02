@@ -1,5 +1,5 @@
 /**
- * 喬木英語 - 雙向費曼學習平台
+ * 南臺科技大學英語 - 雙向費曼學習平台
  * 主要 JavaScript 功能模組
  */
 
@@ -358,7 +358,7 @@ class QiaomuEnglishApp {
         if (Notification.permission === 'granted') {
             const today = new Date().toDateString();
             if (this.learningData.lastStudyDate !== today) {
-                new Notification('喬木英語學習提醒', {
+                new Notification('南臺科技大學英語學習提醒', {
                     body: '該是學習英語的時間了！保持你的學習連續記錄 🔥',
                     icon: '/favicon.ico',
                     badge: '/favicon.ico',
@@ -655,7 +655,7 @@ class QiaomuEnglishApp {
             this.setupAccessibility();
             this.setupOfflineSupport();
             this.setupStudyReminders();
-            console.log('喬木英語應用程式初始化完成');
+            console.log('南臺科技大學英語應用程式初始化完成');
         } catch (error) {
             this.handleError(error, '應用程式初始化');
         }
@@ -733,7 +733,7 @@ window.QiaomuUtils = {
     t(key, params = {}) {
         const translations = {
             'zh-TW': {
-                'welcome': '歡迎使用喬木英語',
+                'welcome': '歡迎使用南臺科技大學英語學習平台',
                 'loading': '載入中...',
                 'error': '發生錯誤',
                 'success': '成功',
@@ -767,5 +767,5 @@ document.addEventListener('DOMContentLoaded', () => {
     window.qiaomuApp = new QiaomuEnglishApp();
     window.qiaomuApp.initialize();
     
-    console.log('喬木英語雙向費曼學習平台已成功載入');
+    console.log('南臺科技大學英語雙向費曼學習平台已成功載入');
 });
