@@ -7,636 +7,319 @@
     <title>南臺科技大學 - 雙向費曼學習平台</title>
     
     <!-- External Libraries -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <!-- Local Styles -->
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/components.css">
-    
-    <!-- Alpine.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.0/cdn.min.js" defer></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body class="dynamic-bg min-h-screen" x-data="qiaomuApp()">
+<body class="dynamic-bg">
     
     <!-- 頂部導航 -->
-    <header class="glass-morphism sticky top-0 z-50 backdrop-blur-md">
-        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div class="flex justify-between items-center">
-                <!-- Logo -->
-                <div @click="resetToHome()" 
-                     class="logo-container cursor-pointer floating">
-                    <i class="fas fa-graduation-cap mr-2"></i>
-                    <span class="logo-text">南臺科技大學英語學習平台</span>
-                </div>
-                
-                <!-- 用戶資訊 -->
-                <div class="user-indicator flex items-center space-x-4 text-white">
-                    <div class="hidden sm:block text-right">
-                        <p class="text-sm opacity-90" x-text="currentUser.name"></p>
-                        <p class="text-xs opacity-70">連續學習 <span x-text="learningStreak"></span> 天</p>
-                    </div>
-                    <div class="relative">
-                        <div class="user-avatar">
-                            <i class="fas fa-user text-white"></i>
-                        </div>
-                        <div class="status-indicator pulse-ring"></div>
-                    </div>
-                </div>
+    <header class="navbar glass-morphism">
+        <div class="nav-container">
+            <div class="logo-container" onclick="resetToHome()">
+                <i class="fas fa-graduation-cap"></i>
+                <span class="logo-text">南臺科技大學英語學習平台</span>
             </div>
             
-            <!-- 主導航 -->
-            <div class="main-navigation">
-                <button @click="currentModule = 'dashboard'" 
-                        :class="{'active': currentModule === 'dashboard'}" 
-                        class="nav-button">
-                    <i class="fas fa-tachometer-alt mr-1 sm:mr-2"></i>
+            <div class="user-info">
+                <div class="user-details">
+                    <div class="user-name" id="userName">學習者</div>
+                    <div class="user-streak">連續學習 <span id="learningStreak">7</span> 天</div>
+                </div>
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                    <div class="status-indicator"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主導航 -->
+        <div class="main-navigation">
+            <div class="nav-menu">
+                <button class="nav-button active" data-module="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
                     <span>儀表板</span>
                 </button>
-                <button @click="currentModule = 'words'" 
-                        :class="{'active': currentModule === 'words'}" 
-                        class="nav-button">
-                    <i class="fas fa-book mr-1 sm:mr-2"></i>
+                <button class="nav-button" data-module="words">
+                    <i class="fas fa-book"></i>
                     <span>單字學習</span>
                 </button>
-                <button @click="currentModule = 'feynman'" 
-                        :class="{'active': currentModule === 'feynman'}" 
-                        class="nav-button">
-                    <i class="fas fa-brain mr-1 sm:mr-2"></i>
+                <button class="nav-button" data-module="feynman">
+                    <i class="fas fa-brain"></i>
                     <span>費曼學習</span>
                 </button>
-                <button @click="currentModule = 'force'" 
-                        :class="{'active': currentModule === 'force'}" 
-                        class="nav-button">
-                    <i class="fas fa-dumbbell mr-1 sm:mr-2"></i>
+                <button class="nav-button" data-module="force">
+                    <i class="fas fa-dumbbell"></i>
                     <span>強迫學習</span>
                 </button>
-                <button @click="currentModule = 'quiz'" 
-                        :class="{'active': currentModule === 'quiz'}" 
-                        class="nav-button">
-                    <i class="fas fa-tasks mr-1 sm:mr-2"></i>
+                <button class="nav-button" data-module="quiz">
+                    <i class="fas fa-tasks"></i>
                     <span>測驗</span>
                 </button>
             </div>
-        </nav>
+        </div>
     </header>
 
-    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="main-content">
 
         <!-- 儀表板模組 -->
-        <div x-show="currentModule === 'dashboard'" 
-             x-transition:enter="module-fade-enter-active" 
-             x-transition:enter-start="module-fade-enter-from" 
-             x-transition:enter-end="" 
-             x-transition:leave="module-fade-leave-active" 
-             x-transition:leave-start="" 
-             x-transition:leave-end="module-fade-leave-to">
-            
-            <h2 class="module-title floating">
-                <i class="fas fa-chart-line mr-3"></i>學習儀表板
+        <div id="dashboard-module" class="module">
+            <h2 class="module-title">
+                <i class="fas fa-chart-line" style="margin-right: 1rem;"></i>學習儀表板
             </h2>
             
             <!-- 學習統計卡片 -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-circle mx-auto mb-4">
-                        <div class="stat-inner">
-                            <div class="stat-number" x-text="words.length"></div>
-                            <div class="stat-label">單字</div>
-                        </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-book" style="color: #4ecdc4;"></i>
                     </div>
-                    <h3 class="stat-title">已學單字</h3>
+                    <div class="stat-number" id="totalWords">8</div>
+                    <div class="stat-title">已學單字</div>
                 </div>
                 
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <i class="fas fa-brain text-yellow-300"></i>
+                        <i class="fas fa-brain" style="color: #ffd93d;"></i>
                     </div>
-                    <div class="stat-number" x-text="feynmanProgress.completed"></div>
-                    <h3 class="stat-title">費曼解釋</h3>
+                    <div class="stat-number" id="feynmanCount">3</div>
+                    <div class="stat-title">費曼解釋</div>
                 </div>
                 
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <i class="fas fa-dumbbell text-red-300"></i>
+                        <i class="fas fa-dumbbell" style="color: #ff6b6b;"></i>
                     </div>
-                    <div class="stat-number" x-text="forceProgress.level"></div>
-                    <h3 class="stat-title">強迫等級</h3>
+                    <div class="stat-number" id="forceLevel">3</div>
+                    <div class="stat-title">強迫等級</div>
                 </div>
                 
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <i class="fas fa-trophy text-green-300"></i>
+                        <i class="fas fa-trophy" style="color: #4ecdc4;"></i>
                     </div>
-                    <div class="stat-number" x-text="getAccuracyRate() + '%'"></div>
-                    <h3 class="stat-title">準確率</h3>
+                    <div class="stat-number" id="accuracyRate">85%</div>
+                    <div class="stat-title">準確率</div>
                 </div>
             </div>
-            
+
             <!-- 學習建議 -->
             <div class="learning-suggestions">
-                <h3 class="suggestions-title">
-                    <i class="fas fa-lightbulb text-yellow-300 mr-2"></i>今日學習建議
-                </h3>
+                <div class="suggestions-title">
+                    <i class="fas fa-lightbulb" style="color: #ffd93d; margin-right: 0.5rem;"></i>今日學習建議
+                </div>
                 <div class="suggestions-grid">
                     <div class="suggestion-card">
-                        <h4 class="suggestion-title">
-                            <i class="fas fa-book-open mr-2"></i>繼續單字學習
-                        </h4>
-                        <p class="suggestion-desc">還有 <span x-text="getRemainingWords()"></span> 個單字等待學習</p>
+                        <div class="suggestion-title">
+                            <i class="fas fa-book-open" style="margin-right: 0.5rem;"></i>繼續單字學習
+                        </div>
+                        <div class="suggestion-desc">還有 <span id="remainingWords">3</span> 個單字等待學習</div>
                     </div>
                     <div class="suggestion-card">
-                        <h4 class="suggestion-title">
-                            <i class="fas fa-chalkboard-teacher mr-2"></i>練習費曼講解
-                        </h4>
-                        <p class="suggestion-desc">用自己的話解釋學過的單字</p>
+                        <div class="suggestion-title">
+                            <i class="fas fa-chalkboard-teacher" style="margin-right: 0.5rem;"></i>練習費曼講解
+                        </div>
+                        <div class="suggestion-desc">用自己的話解釋學過的單字</div>
                     </div>
                     <div class="suggestion-card">
-                        <h4 class="suggestion-title">
-                            <i class="fas fa-clock mr-2"></i>強迫學習挑戰
-                        </h4>
-                        <p class="suggestion-desc">設定時間限制，提升學習效率</p>
+                        <div class="suggestion-title">
+                            <i class="fas fa-clock" style="margin-right: 0.5rem;"></i>強迫學習挑戰
+                        </div>
+                        <div class="suggestion-desc">設定時間限制，提升學習效率</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- 單字學習模組 -->
-        <div x-show="currentModule === 'words'" 
-             x-transition:enter="module-fade-enter-active" 
-             x-transition:enter-start="module-fade-enter-from" 
-             x-transition:enter-end="" 
-             x-transition:leave="module-fade-leave-active" 
-             x-transition:leave-start="" 
-             x-transition:leave-end="module-fade-leave-to">
-            
-            <h2 class="module-title floating">
-                <i class="fas fa-book mr-3"></i>單字學習
+        <div id="words-module" class="module hidden">
+            <h2 class="module-title">
+                <i class="fas fa-book" style="margin-right: 1rem;"></i>單字學習
             </h2>
             
-            <div class="max-w-2xl mx-auto">
-                <div class="flashcard-container mb-8">
-                    <div class="flashcard" :class="{ 'is-flipped': wordCardFlipped }" @click="wordCardFlipped = !wordCardFlipped">
-                        <!-- 正面 -->
-                        <div class="flashcard-face flashcard-front">
-                            <div class="word-display" x-text="currentWordData.word"></div>
-                            <div class="phonetic-display" x-text="currentWordData.phonetic"></div>
-                            <div class="flip-hint">點擊翻卡</div>
-                        </div>
-                        
-                        <!-- 背面 -->
-                        <div class="flashcard-face flashcard-back">
-                            <div class="word-details">
-                                <div class="word-section">
-                                    <h3 class="section-title">釋義</h3>
-                                    <p class="section-content" x-text="currentWordData.definition"></p>
-                                </div>
-                                
-                                <div class="word-section" x-show="currentWordData.etymology">
-                                    <h3 class="section-title">詞根解析</h3>
-                                    <p class="section-content small" x-text="currentWordData.etymology"></p>
-                                </div>
-                                
-                                <div class="word-section">
-                                    <h3 class="section-title">例句</h3>
-                                    <p class="section-content italic" x-text="currentWordData.sentence"></p>
-                                </div>
-                                
-                                <div class="word-actions">
-                                    <button @click.stop="startFeynmanExplanation()" class="action-btn">
-                                        <i class="fas fa-brain mr-2"></i>費曼解釋
-                                    </button>
-                                </div>
+            <div class="flashcard-container">
+                <div class="flashcard" id="flashcard">
+                    <!-- 正面 -->
+                    <div class="flashcard-face flashcard-front">
+                        <div class="word-display" id="currentWord">native</div>
+                        <div class="phonetic-display" id="currentPhonetic">/ˈneɪtɪv/</div>
+                        <div class="flip-hint">點擊翻卡</div>
+                    </div>
+                    
+                    <!-- 背面 -->
+                    <div class="flashcard-face flashcard-back">
+                        <div class="word-details">
+                            <div class="word-section">
+                                <div class="section-title">釋義</div>
+                                <div class="section-content" id="currentDefinition">本地的；天生的；土生土長的</div>
+                            </div>
+                            
+                            <div class="word-section">
+                                <div class="section-title">詞根解析</div>
+                                <div class="section-content small" id="currentEtymology">來自拉丁語 nativus "天生的，自然的"</div>
+                            </div>
+                            
+                            <div class="word-section">
+                                <div class="section-title">例句</div>
+                                <div class="section-content italic" id="currentSentence">This is a truly AI Native browser.</div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- 導航控制 -->
-                <div class="word-navigation">
-                    <button @click="prevWord()" 
-                            :disabled="currentWordIndex === 0" 
-                            class="nav-btn prev-btn">
-                        <i class="fas fa-chevron-left mr-2"></i> 上一個
-                    </button>
+            <!-- 導航控制 -->
+            <div class="word-navigation">
+                <button class="nav-btn" id="prevWordBtn">
+                    <i class="fas fa-chevron-left"></i> 上一個
+                </button>
 
-                    <div class="progress-info">
-                        <div class="progress-text" x-text="`${currentWordIndex + 1} / ${words.length}`"></div>
-                        <div class="progress-label">單字進度</div>
-                    </div>
-
-                    <button @click="nextWord()" 
-                            :disabled="currentWordIndex >= words.length - 1"
-                            class="nav-btn next-btn">
-                        下一個 <i class="fas fa-chevron-right ml-2"></i>
-                    </button>
+                <div class="progress-info">
+                    <div class="progress-text" id="wordProgress">1 / 8</div>
+                    <div class="progress-label">單字進度</div>
                 </div>
-                
-                <!-- 進度條 -->
-                <div class="progress-container">
-                    <div class="force-progress">
-                        <div class="progress-bar" 
-                             :style="`width: ${((currentWordIndex + 1) / words.length) * 100}%`"></div>
-                    </div>
+
+                <button class="nav-btn" id="nextWordBtn">
+                    下一個 <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <!-- 進度條 -->
+            <div class="progress-container">
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar" id="wordProgressBar" style="width: 12.5%"></div>
                 </div>
             </div>
         </div>
 
         <!-- 費曼學習模組 -->
-        <div x-show="currentModule === 'feynman'" 
-             x-transition:enter="module-fade-enter-active" 
-             x-transition:enter-start="module-fade-enter-from" 
-             x-transition:enter-end="" 
-             x-transition:leave="module-fade-leave-active" 
-             x-transition:leave-start="" 
-             x-transition:leave-end="module-fade-leave-to">
-            
-            <h2 class="module-title floating">
-                <i class="fas fa-brain mr-3"></i>費曼學習法
+        <div id="feynman-module" class="module hidden">
+            <h2 class="module-title">
+                <i class="fas fa-brain" style="margin-right: 1rem;"></i>費曼學習法
             </h2>
             
-            <div class="max-w-4xl mx-auto">
-                <!-- 費曼學習說明 -->
-                <div class="feynman-intro">
-                    <h3 class="intro-title">
-                        <i class="fas fa-info-circle mr-2"></i>什麼是費曼學習法？
-                    </h3>
-                    <p class="intro-desc">費曼學習法是一種通過「教授他人」來加深理解的學習方法。當你能用簡單的話解釋複雜的概念時，就表示你真正理解了。</p>
-                    <div class="intro-steps">
-                        <div class="step-item">
-                            <h4 class="step-title">📚 選擇概念</h4>
-                            <p class="step-desc">選擇一個你想要學習的單字或概念</p>
-                        </div>
-                        <div class="step-item">
-                            <h4 class="step-title">👨‍🏫 簡單解釋</h4>
-                            <p class="step-desc">用你自己的話，像教小孩一樣解釋</p>
-                        </div>
-                        <div class="step-item">
-                            <h4 class="step-title">🔍 找出漏洞</h4>
-                            <p class="step-desc">發現解釋中的不足之處</p>
-                        </div>
-                        <div class="step-item">
-                            <h4 class="step-title">📖 重新學習</h4>
-                            <p class="step-desc">回到原材料，填補知識漏洞</p>
-                        </div>
+            <!-- 費曼學習說明 -->
+            <div class="feynman-intro">
+                <div class="intro-title">
+                    <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>什麼是費曼學習法？
+                </div>
+                <div class="intro-desc">費曼學習法是一種通過「教授他人」來加深理解的學習方法。當你能用簡單的話解釋複雜的概念時，就表示你真正理解了。</div>
+                <div class="intro-steps">
+                    <div class="step-item">
+                        <div class="step-title">📚 選擇概念</div>
+                        <div class="step-desc">選擇一個你想要學習的單字或概念</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-title">👨‍🏫 簡單解釋</div>
+                        <div class="step-desc">用你自己的話，像教小孩一樣解釋</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-title">🔍 找出漏洞</div>
+                        <div class="step-desc">發現解釋中的不足之處</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-title">📖 重新學習</div>
+                        <div class="step-desc">回到原材料，填補知識漏洞</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 費曼練習區 -->
+            <div class="feynman-practice">
+                <div class="practice-title">
+                    <i class="fas fa-chalkboard-teacher" style="margin-right: 0.5rem;"></i>開始你的費曼解釋
+                </div>
+                
+                <!-- 選擇單字 -->
+                <div class="word-selection">
+                    <label class="selection-label">選擇要解釋的單字：</label>
+                    <div class="word-grid" id="feynmanWordGrid">
+                        <!-- 單字選項將由 JavaScript 動態生成 -->
                     </div>
                 </div>
                 
-                <!-- 費曼練習區 -->
-                <div class="feynman-practice">
-                    <h3 class="practice-title">
-                        <i class="fas fa-chalkboard-teacher mr-2"></i>開始你的費曼解釋
-                    </h3>
-                    
-                    <!-- 選擇單字 -->
-                    <div class="word-selection">
-                        <label class="selection-label">選擇要解釋的單字：</label>
-                        <div class="word-grid">
-                            <template x-for="(word, index) in words" :key="index">
-                                <button @click="selectFeynmanWord(index)"
-                                        :class="{'selected': feynmanWordIndex === index}"
-                                        class="word-option"
-                                        x-text="word.word">
-                                </button>
-                            </template>
-                        </div>
+                <!-- 解釋輸入區 -->
+                <div class="explanation-section" id="explanationSection" style="display: none;">
+                    <label class="explanation-label">
+                        用簡單的話解釋 "<span class="word-highlight" id="selectedWordDisplay"></span>"：
+                    </label>
+                    <textarea id="explanationTextarea" class="explanation-textarea" 
+                              placeholder="想像你在教一個10歲的孩子，用最簡單的語言解釋這個單字..."></textarea>
+                    <div class="char-counter">
+                        建議字數：<span id="charCount">0</span> / 100+
                     </div>
                     
-                    <!-- 解釋輸入區 -->
-                    <div class="explanation-section" x-show="feynmanWordIndex !== -1">
-                        <label class="explanation-label">
-                            用簡單的話解釋 "<span x-text="currentFeynmanWord.word" class="word-highlight"></span>"：
-                        </label>
-                        <textarea x-model="feynmanExplanation"
-                                  placeholder="想像你在教一個10歲的孩子，用最簡單的語言解釋這個單字..."
-                                  class="explanation-textarea"
-                                  @input="checkFeynmanExplanation()"></textarea>
-                        <div class="char-counter">
-                            建議字數：<span x-text="feynmanExplanation.length"></span> / 100+
-                        </div>
-                    </div>
-                    
-                    <!-- AI 反饋 -->
-                    <div x-show="feynmanFeedback" class="ai-feedback">
-                        <h4 class="feedback-title">
-                            <i class="fas fa-robot mr-2"></i>AI 反饋
-                        </h4>
-                        <p class="feedback-content" x-text="feynmanFeedback"></p>
-                    </div>
-                    
-                    <!-- 提交按鈕 -->
-                    <div class="submit-section" x-show="feynmanWordIndex !== -1">
-                        <button @click="submitFeynmanExplanation()"
-                                :disabled="feynmanExplanation.length < 50"
-                                class="submit-btn">
-                            <i class="fas fa-paper-plane mr-2"></i>提交解釋
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <button class="submit-btn" id="submitExplanationBtn" disabled>
+                            <i class="fas fa-paper-plane" style="margin-right: 0.5rem;"></i>提交解釋
                         </button>
-                    </div>
-                </div>
-                
-                <!-- 費曼學習歷史 -->
-                <div class="feynman-history">
-                    <h3 class="history-title">
-                        <i class="fas fa-history mr-2"></i>我的費曼解釋記錄
-                    </h3>
-                    <div class="history-list" x-show="feynmanHistory.length > 0">
-                        <template x-for="(record, index) in feynmanHistory" :key="index">
-                            <div class="history-item">
-                                <div class="history-header">
-                                    <h4 class="history-word" x-text="record.word"></h4>
-                                    <span class="history-date" x-text="record.date"></span>
-                                </div>
-                                <p class="history-explanation" x-text="record.explanation"></p>
-                                <div class="history-rating">
-                                    <div class="rating-stars">
-                                        <template x-for="i in 5" :key="i">
-                                            <i :class="i <= record.rating ? 'fas fa-star' : 'far fa-star'"></i>
-                                        </template>
-                                    </div>
-                                    <span class="rating-feedback" x-text="record.feedback"></span>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-                    <div x-show="feynmanHistory.length === 0" class="empty-state">
-                        <i class="fas fa-clipboard-list text-4xl mb-4"></i>
-                        <p>還沒有費曼解釋記錄，開始你的第一次解釋吧！</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- 強迫學習模組 -->
-        <div x-show="currentModule === 'force'" 
-             x-transition:enter="module-fade-enter-active" 
-             x-transition:enter-start="module-fade-enter-from" 
-             x-transition:enter-end="" 
-             x-transition:leave="module-fade-leave-active" 
-             x-transition:leave-start="" 
-             x-transition:leave-end="module-fade-leave-to">
-            
-            <h2 class="module-title floating">
-                <i class="fas fa-dumbbell mr-3"></i>強迫學習法
+        <div id="force-module" class="module hidden">
+            <h2 class="module-title">
+                <i class="fas fa-dumbbell" style="margin-right: 1rem;"></i>強迫學習法
             </h2>
             
-            <div class="max-w-4xl mx-auto">
-                <!-- 強迫學習說明 -->
-                <div class="force-intro">
-                    <h3 class="intro-title">
-                        <i class="fas fa-stopwatch mr-2"></i>什麼是強迫學習法？
-                    </h3>
-                    <p class="intro-desc">強迫學習法通過設定時間限制和特定條件，迫使大腦在壓力下高效學習，提升記憶效果和專注力。</p>
-                    <div class="intro-features">
-                        <div class="feature-item">
-                            <h4 class="feature-title">⏰ 時間壓力</h4>
-                            <p class="feature-desc">限制學習時間，提高效率</p>
-                        </div>
-                        <div class="feature-item">
-                            <h4 class="feature-title">🎯 目標明確</h4>
-                            <p class="feature-desc">設定具體的學習目標</p>
-                        </div>
-                        <div class="feature-item">
-                            <h4 class="feature-title">🏆 即時反饋</h4>
-                            <p class="feature-desc">立即獲得學習成果</p>
-                        </div>
+            <!-- 強迫學習說明 -->
+            <div class="feynman-intro">
+                <div class="intro-title">
+                    <i class="fas fa-stopwatch" style="margin-right: 0.5rem;"></i>什麼是強迫學習法？
+                </div>
+                <div class="intro-desc">強迫學習法通過設定時間限制和特定條件，迫使大腦在壓力下高效學習，提升記憶效果和專注力。</div>
+                <div class="intro-steps">
+                    <div class="step-item">
+                        <div class="step-title">⏰ 時間壓力</div>
+                        <div class="step-desc">限制學習時間，提高效率</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-title">🎯 目標明確</div>
+                        <div class="step-desc">設定具體的學習目標</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-title">🏆 即時反饋</div>
+                        <div class="step-desc">立即獲得學習成果</div>
                     </div>
                 </div>
-                
-                <!-- 強迫學習挑戰選擇 -->
-                <div class="challenge-selection">
-                    <!-- 快速記憶挑戰 -->
-                    <div class="challenge-card" @click="startForceChallenge('memory')">
-                        <div class="challenge-icon">🧠</div>
-                        <h3 class="challenge-title">快速記憶挑戰</h3>
-                        <p class="challenge-desc">在限定時間內記住盡可能多的單字</p>
-                        <div class="challenge-goal">
-                            <div class="goal-text">目標：60秒內記住10個單字</div>
-                        </div>
-                    </div>
-                    
-                    <!-- 閃電測驗 -->
-                    <div class="challenge-card" @click="startForceChallenge('quiz')">
-                        <div class="challenge-icon">⚡</div>
-                        <h3 class="challenge-title">閃電測驗</h3>
-                        <p class="challenge-desc">快速回答單字問題，考驗反應速度</p>
-                        <div class="challenge-goal lightning">
-                            <div class="goal-text">目標：30秒內答對5題</div>
-                        </div>
-                    </div>
+            </div>
+            
+            <!-- 挑戰選擇 -->
+            <div class="stats-grid">
+                <div class="stat-card challenge-card" onclick="startChallenge('memory')">
+                    <div class="stat-icon">🧠</div>
+                    <div class="stat-title">快速記憶挑戰</div>
+                    <div style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.8;">60秒內記住10個單字</div>
                 </div>
                 
-                <!-- 強迫學習進行中 -->
-                <div x-show="forceChallenge.active" class="force-active">
-                    <!-- 倒計時顯示 -->
-                    <div class="timer-display">
-                        <div class="timer-number" 
-                             :class="{'critical': forceChallenge.timeLeft <= 10}"
-                             x-text="forceChallenge.timeLeft"></div>
-                        <div class="timer-label">秒</div>
-                        <div class="timer-progress">
-                            <div class="progress-bar" 
-                                 :style="`width: ${(1 - forceChallenge.timeLeft / forceChallenge.totalTime) * 100}%`"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 記憶挑戰內容 -->
-                    <div x-show="forceChallenge.type === 'memory'" class="memory-challenge">
-                        <h3 class="challenge-instruction">記住這些單字：</h3>
-                        <div class="memory-words">
-                            <template x-for="(word, index) in forceChallenge.words" :key="index">
-                                <div class="memory-word">
-                                    <div class="word-text" x-text="word.word"></div>
-                                    <div class="word-def" x-text="word.definition"></div>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-                    
-                    <!-- 測驗挑戰內容 -->
-                    <div x-show="forceChallenge.type === 'quiz' && forceChallenge.currentQuestion" class="quiz-challenge">
-                        <h3 class="question-text" x-text="forceChallenge.currentQuestion.question"></h3>
-                        <div class="quiz-options">
-                            <template x-for="(option, index) in forceChallenge.currentQuestion.options" :key="index">
-                                <button @click="answerForceQuestion(index)"
-                                        class="quiz-option"
-                                        x-text="option">
-                                </button>
-                            </template>
-                        </div>
-                    </div>
-                    
-                    <!-- 進度顯示 -->
-                    <div class="challenge-progress">
-                        <div class="progress-text">
-                            進度：<span x-text="forceChallenge.score"></span> / <span x-text="forceChallenge.target"></span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 強迫學習結果 -->
-                <div x-show="forceChallenge.completed" class="force-results">
-                    <div class="result-icon">
-                        <i :class="forceChallenge.success ? 'fas fa-trophy success' : 'fas fa-clock failed'"></i>
-                    </div>
-                    <h3 class="result-title" 
-                        x-text="forceChallenge.success ? '挑戰成功！' : '時間到！'"></h3>
-                    <p class="result-score">
-                        你的得分：<span class="score-highlight" x-text="forceChallenge.score"></span> / <span x-text="forceChallenge.target"></span>
-                    </p>
-                    <div class="result-actions">
-                        <button @click="retryForceChallenge()" class="action-btn retry">
-                            <i class="fas fa-redo mr-2"></i>再次挑戰
-                        </button>
-                        <button @click="endForceChallenge()" class="action-btn return">
-                            <i class="fas fa-home mr-2"></i>返回
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- 強迫學習統計 -->
-                <div class="force-stats">
-                    <h3 class="stats-title">
-                        <i class="fas fa-chart-bar mr-2"></i>強迫學習統計
-                    </h3>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-value" x-text="forceProgress.totalChallenges"></div>
-                            <div class="stat-label">總挑戰次數</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" x-text="forceProgress.successRate + '%'"></div>
-                            <div class="stat-label">成功率</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" x-text="forceProgress.bestScore"></div>
-                            <div class="stat-label">最佳得分</div>
-                        </div>
-                    </div>
+                <div class="stat-card challenge-card" onclick="startChallenge('quiz')">
+                    <div class="stat-icon">⚡</div>
+                    <div class="stat-title">閃電測驗</div>
+                    <div style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.8;">30秒內答對5題</div>
                 </div>
             </div>
         </div>
 
         <!-- 測驗模組 -->
-        <div x-show="currentModule === 'quiz'" 
-             x-transition:enter="module-fade-enter-active" 
-             x-transition:enter-start="module-fade-enter-from" 
-             x-transition:enter-end="" 
-             x-transition:leave="module-fade-leave-active" 
-             x-transition:leave-start="" 
-             x-transition:leave-end="module-fade-leave-to">
-            
-            <h2 class="module-title floating">
-                <i class="fas fa-tasks mr-3"></i>理解測驗
+        <div id="quiz-module" class="module hidden">
+            <h2 class="module-title">
+                <i class="fas fa-tasks" style="margin-right: 1rem;"></i>理解測驗
             </h2>
             
-            <div class="max-w-3xl mx-auto">
-                <!-- 測驗進行中 -->
-                <div x-show="!quizCompleted" class="quiz-active">
-                    <div class="quiz-header">
-                        <div class="quiz-progress-info">
-                            <span class="progress-text">
-                                問題 <span x-text="currentQuestionIndex + 1"></span> / <span x-text="questions.length"></span>
-                            </span>
-                            <div class="quiz-timer">
-                                <i class="fas fa-clock mr-1"></i>
-                                <span x-text="formatTime(quizTimer)"></span>
-                            </div>
-                        </div>
-                        
-                        <div class="quiz-progress-bar">
-                            <div class="progress-fill" 
-                                 :style="`width: ${((currentQuestionIndex + 1) / questions.length) * 100}%`"></div>
-                        </div>
-                        
-                        <h3 class="question-title" x-text="currentQuestionData.question"></h3>
-                    </div>
-                    
-                    <div class="quiz-options">
-                        <template x-for="(option, index) in currentQuestionData.options" :key="index">
-                            <button @click="selectAnswer(index)"
-                                    :disabled="userAnswers[currentQuestionIndex] !== null"
-                                    class="option-button"
-                                    :class="{
-                                        'correct': userAnswers[currentQuestionIndex] !== null && index === currentQuestionData.correctAnswer,
-                                        'incorrect': userAnswers[currentQuestionIndex] !== null && index === userAnswers[currentQuestionIndex] && index !== currentQuestionData.correctAnswer,
-                                        'neutral': userAnswers[currentQuestionIndex] !== null && index !== userAnswers[currentQuestionIndex] && index !== currentQuestionData.correctAnswer
-                                    }">
-                                <span class="option-letter" x-text="String.fromCharCode(65 + index) + '.'"></span>
-                                <span class="option-text" x-text="option"></span>
-                                <template x-if="userAnswers[currentQuestionIndex] !== null && index === currentQuestionData.correctAnswer">
-                                    <i class="fas fa-check option-icon correct"></i>
-                                </template>
-                                <template x-if="userAnswers[currentQuestionIndex] !== null && index === userAnswers[currentQuestionIndex] && index !== currentQuestionData.correctAnswer">
-                                    <i class="fas fa-times option-icon incorrect"></i>
-                                </template>
-                            </button>
-                        </template>
-                    </div>
-                    
-                    <!-- 解析 -->
-                    <div x-show="userAnswers[currentQuestionIndex] !== null" 
-                         class="quiz-explanation" 
-                         x-transition>
-                        <h4 class="explanation-title">
-                            <i class="fas fa-lightbulb mr-2"></i>解析
-                        </h4>
-                        <p class="explanation-text" x-text="currentQuestionData.explanation"></p>
-                    </div>
-
-                    <!-- 導航按鈕 -->
-                    <div class="quiz-navigation">
-                        <template x-if="currentQuestionIndex < questions.length - 1">
-                            <button @click="nextQuestion()"
-                                    :disabled="userAnswers[currentQuestionIndex] === null"
-                                    class="nav-btn next">
-                                下一題 <i class="fas fa-chevron-right ml-2"></i>
-                            </button>
-                        </template>
-                        <template x-if="currentQuestionIndex === questions.length - 1">
-                            <button @click="finishQuiz()"
-                                    :disabled="userAnswers[currentQuestionIndex] === null"
-                                    class="nav-btn finish">
-                                完成測驗 <i class="fas fa-check-circle ml-2"></i>
-                            </button>
-                        </template>
-                    </div>
+            <div class="feynman-intro">
+                <div class="intro-title">
+                    <i class="fas fa-question-circle" style="margin-right: 0.5rem;"></i>測試你的單字理解
                 </div>
-
-                <!-- 測驗結果 -->
-                <div x-show="quizCompleted" class="quiz-results">
-                    <div class="result-header">
-                        <div class="result-icon">
-                            <i :class="getScoreIcon()" :style="getScoreColor()"></i>
-                        </div>
-                        <h3 class="result-title">測驗完成！</h3>
-                    </div>
-                    
-                    <div class="result-stats">
-                        <div class="result-stat">
-                            <div class="stat-number" x-text="quizScore"></div>
-                            <div class="stat-label">正確答案</div>
-                        </div>
-                        <div class="result-stat">
-                            <div class="stat-number" x-text="getAccuracyRate() + '%'"></div>
-                            <div class="stat-label">準確率</div>
-                        </div>
-                        <div class="result-stat">
-                            <div class="stat-number" x-text="formatTime(quizTimer)"></div>
-                            <div class="stat-label">用時</div>
-                        </div>
-                    </div>
-                    
-                    <p class="result-feedback" x-text="getQuizFeedback()"></p>
-                    
-                    <div class="result-actions">
-                        <button @click="retakeQuiz()" class="action-btn retry">
-                            <i class="fas fa-redo mr-2"></i>重新測驗
-                        </button>
-                        <button @click="currentModule = 'dashboard'" class="action-btn dashboard">
-                            <i class="fas fa-chart-line mr-2"></i>查看統計
-                        </button>
-                    </div>
+                <div class="intro-desc">通過選擇題測試你對單字的理解程度，包括詞根、詞義和用法。</div>
+                
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <button class="submit-btn" onclick="startQuiz()">
+                        <i class="fas fa-play" style="margin-right: 0.5rem;"></i>開始測驗
+                    </button>
                 </div>
             </div>
         </div>
@@ -644,7 +327,6 @@
     </main>
 
     <!-- JavaScript -->
-    <script src="scripts/app.js"></script>
-    <script src="scripts/modules.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
